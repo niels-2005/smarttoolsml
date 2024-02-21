@@ -1,72 +1,34 @@
 import numpy as np
 import tensorflow as tf
-import tqdm
-from tf.keras.preprocessing import image_dataset_from_directory
-from tf.keras import Model
-
-
-def preprocess_dataset(
-    dataset: tf.data.Dataset,
-    preprocess_fn=None,
-    batch_size: int = 32,
-    prefetch_buffer=tf.data.AUTOTUNE,
-    num_parallel_calls=tf.data.AUTOTUNE,
-    drop_remainder=True,
-) -> tf.data.Dataset:
-    """
-    Applies preprocessing, batching, and prefetching to a tf.data.Dataset for performance optimization.
-
-    Args:
-        dataset (tf.data.Dataset): The dataset to preprocess.
-        preprocess_fn (callable, optional): The preprocessing function to apply to each element in the dataset.
-        batch_size (int, optional): Size of the batches of data. Defaults to 32.
-        prefetch_buffer (int, optional): The prefetch buffer size, typically set to tf.data.AUTOTUNE for dynamic adjustment.
-        num_parallel_calls (int, optional): The number of parallel calls to the map function, typically set to tf.data.AUTOTUNE.
-        drop_remainder (bool, optional): Whether to drop the remainder of the batches if it's not a full batch. Defaults to True.
-
-    Returns:
-        tf.data.Dataset: The preprocessed dataset.
-    """
-    if preprocess_fn:
-        dataset = dataset.map(preprocess_fn, num_parallel_calls=num_parallel_calls)
-    dataset = dataset.batch(batch_size, drop_remainder=drop_remainder)
-    dataset = dataset.prefetch(prefetch_buffer)
-    return dataset
+from tqdm import tqdm
+from tensorflow.keras.preprocessing import image_dataset_from_directory
+from tensorflow.keras import Model
 
 
 def get_image_datasets(
     train_dir: str,
     valid_dir: str,
     test_dir: str,
-    preprocess_fn=None,
     include_test_dir: bool = True,
     label_mode: str = "categorical",
     batch_size: int = 32,
     image_size: tuple[int, int] = (224, 224),
-    prefetch_buffer=tf.data.AUTOTUNE,
-    num_parallel_calls=tf.data.AUTOTUNE,
-    drop_remainder=True,
 ) -> tuple:
     """
-    Creates image datasets from directories for training, validation, and optionally testing,
-    and applies preprocessing using a specified function.
+    Creates image datasets from directories for training, validation, and optionally testing
 
     Args:
         train_dir (str): Directory with training images.
         valid_dir (str): Directory with validation images.
         test_dir (str): Directory with test images, used only if include_test_dir is True.
-        preprocess_fn (callable, optional): The preprocessing function to apply to each element in the dataset.
         include_test_dir (bool, optional): Whether to include test dataset. Defaults to True.
         label_mode (str, optional): Type of label extraction, 'categorical', 'binary', 'int', or None. Defaults to 'categorical'.
         batch_size (int, optional): Size of the batches of data. Defaults to 32.
         image_size (tuple[int, int], optional): The size to resize images to. Defaults to (224, 224).
-        prefetch_buffer (int, optional): The prefetch buffer size, typically set to tf.data.AUTOTUNE. Defaults to tf.data.AUTOTUNE.
-        num_parallel_calls (int, optional): The number of parallel calls to the map function, typically set to tf.data.AUTOTUNE. Defaults to tf.data.AUTOTUNE.
-        drop_remainder (bool, optional): Whether to drop the remainder of the batches if it's not a full batch. Defaults to True.
 
     Returns:
         tuple: A tuple containing the training dataset, validation dataset, and optionally the test dataset.
-    
+
     Example usage:
         train_dir = '/path/to/train'
         valid_dir = '/path/to/valid'
@@ -76,7 +38,6 @@ def get_image_datasets(
             train_dir=train_dir,
             valid_dir=valid_dir,
             test_dir=test_dir,
-            preprocess_fn=preprocess_input, # preprocess_input from resnet
             include_test_dir=True,
             label_mode='categorical',
             batch_size=32,
@@ -90,20 +51,16 @@ def get_image_datasets(
         label_mode=label_mode,
         image_size=image_size,
         shuffle=True,
-        batch_size=batch_size
+        batch_size=batch_size,
     )
 
     valid_dataset = image_dataset_from_directory(
         valid_dir,
         label_mode=label_mode,
         image_size=image_size,
-        shuffle=False, # dont need to shuffle
+        shuffle=False,  # dont need to shuffle
         batch_size=batch_size,
     )
-
-    # Apply preprocessing, batching, and prefetching
-    train_dataset = preprocess_dataset(train_dataset, preprocess_fn, batch_size, prefetch_buffer, num_parallel_calls, drop_remainder)
-    valid_dataset = preprocess_dataset(valid_dataset, preprocess_fn, batch_size, prefetch_buffer, num_parallel_calls, drop_remainder)
 
     # optionally include test_dir
     if include_test_dir:
@@ -111,11 +68,9 @@ def get_image_datasets(
             test_dir,
             label_mode=label_mode,
             image_size=image_size,
-            shuffle=False, # dont need to shuffle
-            batch_size=batch_size, 
+            shuffle=False,  # dont need to shuffle
+            batch_size=batch_size,
         )
-        test_dataset = preprocess_dataset(test_dataset, preprocess_fn, batch_size, prefetch_buffer, num_parallel_calls, drop_remainder)
-        
         return train_dataset, valid_dataset, test_dataset
     else:
         return train_dataset, valid_dataset
@@ -159,27 +114,36 @@ def evaluate_image_classification_model(
     return loss, accuracy, y_pred
 
 
-def extract_labels_from_dataset(files: tf.data.Dataset) -> np.ndarray:
+def extract_labels_from_dataset(files: tf.data.Dataset, is_categorical: bool = True) -> np.ndarray:
     """
     Extracts true labels from an ImageDataset.
 
     This function iterates over an unbatched ImageDataset and extracts the true labels
-    for each image. It is assumed that the labels are one-hot encoded and the function
-    returns the indices of the maximum values (argmax) as the true labels.
+    for each image. If is_categorical is True, it is assumed that the labels are one-hot 
+    encoded and the function returns the indices of the maximum values (argmax) as the true labels.
+    If is_categorical is False, it is assumed that the labels are already provided as integer indices.
 
     Args:
-        files (ImageDataset): The image dataset from which to extract the true labels.
-                              The dataset is expected to tuples of (images, labels).
+        files (tf.data.Dataset): The image dataset from which to extract the true labels.
+                                 The dataset is expected to tuples of (images, labels).
+        is_categorical (bool): Indicates whether the labels are one-hot encoded (True) or
+                               not (False).
 
     Returns:
         np.ndarray: An array of true labels extracted from the dataset.
 
     Example usage:
-        extract_labels_from_dataset(files)
+        extract_labels_from_dataset(files, is_categorical=True)
     """
     y_true = []
-    for images, labels in tqdm(files.unbatch(), desc="Extracting labels"):
-        # Assuming labels are one-hot encoded, get the label indices
-        y_true.append(np.argmax(labels.numpy()))
+    for images, labels in files.unbatch():
+        if is_categorical:
+            # One-hot encoded labels: convert to indices
+            labels = np.argmax(labels.numpy(), axis=-1)
+        else:
+            # Labels are already integer indices: directly use them
+            labels = labels.numpy()
+        
+        y_true.append(labels)
 
     return np.array(y_true)

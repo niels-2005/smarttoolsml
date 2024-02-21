@@ -11,7 +11,7 @@ from sklearn.metrics import (
     confusion_matrix,
     precision_recall_fscore_support,
 )
-from tf.keras.models import Model
+from tensorflow.keras.models import Model
 
 
 def make_confusion_matrix(

@@ -1,5 +1,5 @@
-import tensorflow as tf 
-from tf.keras import Model, Sequential, layers
+import tensorflow as tf
+from tensorflow.keras import Model, Sequential, layers
 
 
 def build_model(
@@ -41,22 +41,20 @@ def build_model(
                     input_shape=(224, 224, 3))
     """
     # initalize pretrained resnet model without top layers and 'avg' pooling
-    resnet_model = resnet(
-        include_top=False, input_shape=input_shape, pooling="avg"
-    )
+    resnet_model = resnet(include_top=False, input_shape=input_shape, pooling="avg")
     resnet_model.trainable = False  # freeze the pretrained layers
 
     # define model and add layers
     model = Sequential()
     model.add(resnet_model)
-    model.add(layers.Dense(1024, activation='relu'))
+    model.add(layers.Dense(1024, activation="relu"))
 
     # Add the final Dense layer for classification
     if is_categorical:
-        model.add(layers.Dense(num_classes, activation='softmax'))
+        model.add(layers.Dense(num_classes, activation="softmax"))
     else:
-        model.add(layers.Dense(1, activation='sigmoid'))
-    
+        model.add(layers.Dense(1, activation="sigmoid"))
+
     # compile the model
     model.compile(loss=loss, optimizer=optimizer, metrics=["accuracy"])
 
@@ -123,12 +121,10 @@ def build_model_data_augmented(
         model.add(layer)
 
     # initalize pretrained resnet model without top layers and 'avg' pooling
-    resnet_model = resnet(
-        include_top=False, pooling="avg", input_shape=input_shape
-    )
+    resnet_model = resnet(include_top=False, pooling="avg", input_shape=input_shape)
     resnet_model.trainable = False  # Freeze the ResNet model
     model.add(resnet_model)
-    model.add(layers.Dense(1024, activation='relu'))
+    model.add(layers.Dense(1024, activation="relu"))
 
     # Add the final Dense layer for classification
     if is_categorical:
@@ -142,7 +138,13 @@ def build_model_data_augmented(
     return model
 
 
-def unfreeze_model(model: Model, num_layers: int, optimizer, loss, freeze_batch_norm_layer: bool = False) -> Model:
+def unfreeze_model(
+    model: Model,
+    num_layers: int,
+    optimizer,
+    loss,
+    freeze_batch_norm_layer: bool = False,
+) -> Model:
     """
     Unfreezes the top `num_layers` of a model for fine-tuning. Can optionally keep BatchNormalization layers frozen.
 

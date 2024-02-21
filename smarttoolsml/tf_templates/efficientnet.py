@@ -1,6 +1,6 @@
 import tensorflow as tf
-from tf.keras import Model, Sequential, layers
-from tf.keras.applications import EfficientNetB0
+from tensorflow.keras import Model, Sequential, layers
+from tensorflow.keras.applications import EfficientNetB0
 
 
 def print_efficientnet_resolutions():

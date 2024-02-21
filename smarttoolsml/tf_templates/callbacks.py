@@ -1,10 +1,10 @@
 import tensorflow as tf
-from tf.keras import callbacks
+from tensorflow.keras import callbacks
 
 
 def create_mc_es_rlop_callbacks(
     checkpoint_path: str, patience: int = 5, monitor: str = "val_loss"
-) -> list:
+) -> tuple:
     """
     Creates a list of common callbacks used during the training of a Keras model.
 
@@ -19,7 +19,7 @@ def create_mc_es_rlop_callbacks(
         monitor (str, optional): Metric to be monitored by the callbacks. Defaults to 'val_loss'.
 
     Returns:
-        list: A list containing the configured EarlyStopping, ReduceLROnPlateau, and ModelCheckpoint callbacks.
+        tuple: A tuple containing the configured EarlyStopping, ReduceLROnPlateau, and ModelCheckpoint callbacks.
 
     Example usage:
         callbacks = create_mc_es_rlop_callbacks('./model_checkpoint.h5', patience=10, monitor='val_accuracy')
@@ -37,4 +37,4 @@ def create_mc_es_rlop_callbacks(
         filepath=checkpoint_path, monitor=monitor, save_best_only=True
     )
 
-    return [early_stopping, reduce_lr_on_plateau, model_checkpoint]
+    return early_stopping, reduce_lr_on_plateau, model_checkpoint
