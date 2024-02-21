@@ -5,8 +5,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from sklearn.metrics import (accuracy_score, classification_report,
-                             confusion_matrix, precision_recall_fscore_support)
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+    precision_recall_fscore_support,
+)
 from tf.keras.models import Model
 
 
