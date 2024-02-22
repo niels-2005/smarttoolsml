@@ -233,7 +233,10 @@ def calculate_classes_metrics(
 
 
 def plot_metric_from_classes(
-    df: pd.DataFrame, metric: str, df_class_name_column: str = 'class_name', figsize: tuple[int, int] = (10, 10)
+    df: pd.DataFrame,
+    metric: str,
+    df_class_name_column: str = "class_name",
+    figsize: tuple[int, int] = (10, 10),
 ) -> None:
     """
     Plots a horizontal bar chart of given metric scores for different classes.

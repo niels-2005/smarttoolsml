@@ -54,6 +54,8 @@ def get_image_datasets(
         batch_size=batch_size,
     )
 
+    class_names = train_dataset.class_names
+
     valid_dataset = image_dataset_from_directory(
         valid_dir,
         label_mode=label_mode,
@@ -71,9 +73,9 @@ def get_image_datasets(
             shuffle=False,  # dont need to shuffle
             batch_size=batch_size,
         )
-        return train_dataset, valid_dataset, test_dataset
+        return train_dataset, valid_dataset, test_dataset, class_names
     else:
-        return train_dataset, valid_dataset
+        return train_dataset, valid_dataset, class_names
 
 
 def evaluate_image_classification_model(
