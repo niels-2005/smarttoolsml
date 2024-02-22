@@ -114,12 +114,14 @@ def evaluate_image_classification_model(
     return loss, accuracy, y_pred
 
 
-def extract_labels_from_dataset(files: tf.data.Dataset, is_categorical: bool = True) -> np.ndarray:
+def extract_labels_from_dataset(
+    files: tf.data.Dataset, is_categorical: bool = True
+) -> np.ndarray:
     """
     Extracts true labels from an ImageDataset.
 
     This function iterates over an unbatched ImageDataset and extracts the true labels
-    for each image. If is_categorical is True, it is assumed that the labels are one-hot 
+    for each image. If is_categorical is True, it is assumed that the labels are one-hot
     encoded and the function returns the indices of the maximum values (argmax) as the true labels.
     If is_categorical is False, it is assumed that the labels are already provided as integer indices.
 
@@ -143,7 +145,7 @@ def extract_labels_from_dataset(files: tf.data.Dataset, is_categorical: bool = T
         else:
             # Labels are already integer indices: directly use them
             labels = labels.numpy()
-        
+
         y_true.append(labels)
 
     return np.array(y_true)

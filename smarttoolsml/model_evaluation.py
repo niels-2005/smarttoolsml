@@ -2,6 +2,7 @@ import itertools
 import time
 
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -101,7 +102,7 @@ def make_confusion_matrix(
 
 
 def show_model_prediction_time(
-    model: Model, samples: np.ndarray
+    model: Model, samples: np.ndarray, figsize: tuple[int, int] = (10, 10)
 ) -> tuple[float, float]:
     """
     Times how long a model takes to make predictions on samples.
@@ -109,6 +110,7 @@ def show_model_prediction_time(
     Args:
         model: A trained model, capable of making predictions.
         samples: A batch of samples to predict on. Expected to be in the correct format for the model.
+        figsize (tuple[int, int]): Size of output figure (default=(10, 10)).
 
     Returns:
         total_time (float): Total elapsed time for the model to make predictions on samples, in seconds.
@@ -123,28 +125,47 @@ def show_model_prediction_time(
     total_time = end_time - start_time  # calculate how long predictions took to make
     time_per_pred = total_time / len(samples)  # find prediction time per sample
 
+    plt.figure(figsize=figsize)
+    plt.scatter(total_time, time_per_pred)
+    plt.title("Time how long a model takes to make predictions on sample")
+    plt.xlabel(f"Total time: {total_time:.5f} s")
+    plt.ylabel(f"Time per prediction: {time_per_pred:.5f} s")
+    plt.show()
+
     return total_time, time_per_pred
 
 
 def calculate_model_metrics(
-    y_true: np.ndarray, y_pred: np.ndarray, average: str = "weighted"
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    average: str = "weighted",
+    figsize: tuple[int, int] = (10, 10),
+    color: str = "blue",
 ) -> dict:
     """
     This function uses the 'accuracy_score' and 'precision_recall_fscore_support' from scikit-learn to calculate
     the accuracy, precision, recall, and f1-score of a classification model, with metrics returned as percentages.
+    It also plots these metrics in a bar chart, using Matplotlib, with customizable figure size and bar color.
 
     Args:
         y_true (np.ndarray): Array of truth labels (must be same shape as y_pred).
         y_pred (np.ndarray): Array of predicted labels (must be same shape as y_true).
         average (str, optional): The strategy for averaging. Can be one of 'micro', 'macro', 'samples', 'weighted', or 'binary'.
                                  Defaults to 'weighted' which accounts for label imbalance by computing the average of binary metrics
-                                 in which each classes score is weighted by its presence in the true data sample.
+                                 in which each class's score is weighted by its presence in the true data sample.
+        figsize (tuple[int, int]): Size of output figure (default=(10, 10)).
+        color (str, optional): Color of the bars in the plot. Can be a single color format string, or a sequence of color
+                               specifications of length equal to the number of bars. Accepts name of a color (e.g., 'blue', 'green'),
+                               hex string (e.g., '#008000'), RGB tuple (e.g., (0,1,0)), or grayscale intensity (e.g., '0.5').
+                               Defaults to 'blue'. Example colors: 'red', '#FFDD44', (0.1, 0.2, 0.5), '0.75'.
 
     Returns:
-        Dict[str, float]: A dictionary containing the accuracy, precision, recall, and f1-score, each as a percentage.
+        dict[str, float]: A dictionary containing the accuracy, precision, recall, and f1-score, each as a percentage.
 
     Example usage:
-        model_metrics = calculate_model_metrics(y_true, y_pred, average='weighted')
+        model_metrics = calculate_model_metrics(y_true, y_pred)
+        model_metrics_custom_color = calculate_model_metrics(y_true, y_pred, color='green')
+        model_metrics_rgb_color = calculate_model_metrics(y_true, y_pred, color=(0.5, 0.2, 0.8))
     """
     # Calculate model accuracy and convert to percentage
     model_accuracy = accuracy_score(y_true, y_pred)
@@ -153,12 +174,21 @@ def calculate_model_metrics(
     model_precision, model_recall, model_f1, _ = precision_recall_fscore_support(
         y_true, y_pred, average=average
     )
+
     model_results = {
         "accuracy": model_accuracy * 100,
         "precision": model_precision * 100,
         "recall": model_recall * 100,
         "f1": model_f1 * 100,
     }
+
+    plt.figure(figsize=figsize)
+    plt.bar(model_results.keys(), model_results.values(), color=color)
+    plt.title("Model Metrics")
+    plt.xlabel("Metric Names")
+    plt.ylabel("Metric Values in %")
+    plt.show()
+
     return model_results
 
 
@@ -182,37 +212,28 @@ def calculate_classes_metrics(
                       and recall. Each row corresponds to a class.
 
     Example usage:
-        calculate_classes_metrics(y_true, y_pred, class_names)
+        class_names = ['cats', 'dogs']
+
+        calculate_classes_metrics(y_true, y_pred, class_names=class_names)
     """
-    # classification_report as dict for every class (precision, recall, f1-score, support)
-    class_report_dict = classification_report(y_true, y_pred, output_dict=True)
+    report = classification_report(
+        y_true, y_pred, target_names=classes, output_dict=True
+    )
 
-    classes_f1_score = {}
-    classes_precision = {}
-    classes_recall = {}
+    # Delete Metrics
+    report.pop("accuracy", None)
+    report.pop("macro avg", None)
+    report.pop("weighted avg", None)
 
-    # loop through our classification_report_dict
-    for k, v in class_report_dict.items():
-        # stop once we get to accuracy
-        if k == "accuracy":
-            break
-        else:
-            # Append class names and metrics to new dictionarys
-            classes_f1_score[classes[int(k)]] = v["f1-score"]
-            classes_precision[classes[int(k)]] = v["precision"]
-            classes_recall[classes[int(k)]] = v["recall"]
+    # generate pandas dataframe
+    df = pd.DataFrame.from_dict(report).transpose().reset_index()
+    df.rename(columns={"index": "class_name"}, inplace=True)
 
-    df = {
-        "class_name": list(classes_f1_score.keys()),
-        "f1-score": list(classes_f1_score.values()),
-        "precision": list(classes_precision.values()),
-        "recall": list(classes_recall.values()),
-    }
     return df
 
 
 def plot_metric_from_classes(
-    df: pd.DataFrame, metric: str, df_class_name_column: str, figsize: tuple[int, int]
+    df: pd.DataFrame, metric: str, df_class_name_column: str = 'class_name', figsize: tuple[int, int] = (10, 10)
 ) -> None:
     """
     Plots a horizontal bar chart of given metric scores for different classes.
@@ -225,7 +246,7 @@ def plot_metric_from_classes(
     Args:
         df (pd.DataFrame): The DataFrame containing the metric scores and class names.
         metric (str): The name of the metric column in `df` to plot.
-                      This metric will be displayed on the x-axis.
+                      This metric will be displayed on the x-axis. (precision, recall, f1-score or support)
         df_class_name_column (str): The name of the column in `df` that contains the class names.
                                     These class names will be displayed on the y-axis.
         figsize (tuple[int, int]): A tuple specifying the width and height in inches of the figure to be plotted.

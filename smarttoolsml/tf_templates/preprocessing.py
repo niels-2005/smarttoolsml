@@ -1,16 +1,17 @@
 import tensorflow as tf
 
+
 def preprocess_dataset(dataset: tf.data.Dataset, preprocess_fn=None):
     """
     Applies a custom preprocessing function to each element of a given TensorFlow dataset.
 
     This function is designed to take a TensorFlow dataset object and apply a specified preprocessing function to every element within the dataset.
-    The preprocessing function should be capable of handling the dataset's element structure, typically involving operations on image data and labels. 
+    The preprocessing function should be capable of handling the dataset's element structure, typically involving operations on image data and labels.
     It's particularly useful for preparing datasets for model training or inference by applying normalization, resizing, or data augmentation.
 
     Args:
         dataset (tf.data.Dataset): The dataset to preprocess. It should yield elements that are compatible with the `preprocess_fn`.
-        preprocess_fn (callable, optional): A function to apply to each element in the dataset. This function should accept the format of elements the 
+        preprocess_fn (callable, optional): A function to apply to each element in the dataset. This function should accept the format of elements the
         dataset yields, typically (image, label) tuples, and return them in the same format after applying preprocessing.
 
     Returns:
