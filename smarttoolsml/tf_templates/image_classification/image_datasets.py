@@ -34,14 +34,14 @@ def get_image_datasets(
         valid_dir = '/path/to/valid'
         test_dir = '/path/to/test'
 
-        train_dataset, valid_dataset, test_dataset = get_image_datasets(
-            train_dir=train_dir,
-            valid_dir=valid_dir,
-            test_dir=test_dir,
-            include_test_dir=True,
-            label_mode='categorical',
-            batch_size=32,
-            image_size=(224, 224)
+        train_dataset, valid_dataset, test_dataset, class_names = get_image_datasets(
+                train_dir=train_dir,
+                valid_dir=valid_dir,
+                test_dir=test_dir,
+                include_test_dir=True,
+                label_mode='categorical',
+                batch_size=32,
+                image_size=(224, 224)
         )
     """
 
