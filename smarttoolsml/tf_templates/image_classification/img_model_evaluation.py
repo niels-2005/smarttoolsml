@@ -274,3 +274,97 @@ def plot_wrong_predictions(
 
     plt.tight_layout()
     plt.show()
+
+
+def pred_and_plot_random_image(
+    filepath: str,
+    model: Model,
+    class_names: list,
+    preprocess_fn = None,
+    is_categorical: bool = False,
+    color_channels: int = 3,
+    img_shape: int = 224,
+    figsize: tuple[int, int] = (10, 5)
+) -> None:
+    """
+    Loads an image from a specified filepath, optional processes it, predicts its class using a trained model, and plots both the original and processed images 
+    side by side.
+
+    Args:
+        filepath (str): The path to the image file to be loaded and predicted.
+        model (Model): The trained TensorFlow/Keras model used for making predictions.
+        class_names (list): A list of class names that correspond to the model's output classes.
+        preprocess_fn (callable, optional): A function to preprocess the image before making a prediction. If None, the image is only resized and normalized. Defaults to None.
+        is_categorical (bool, optional): Specifies whether the model's prediction task is categorical (True) or binary (False). Defaults to False.
+        color_channels (int, optional): The number of color channels in the image. Defaults to 3 (for RGB images).
+        img_shape (int, optional): The size to which the image is resized before prediction. Defaults to 224.
+        figsize (tuple[int, int], optional): The size of the figure in which the images are plotted. Defaults to (10, 5).
+
+    Returns:
+        None: This function does not return any value. It directly plots the images using matplotlib.
+
+    Example usage:
+        from tensorflow.keras.models import load_model
+
+        model = load_model('/path/to/your/model.h5')
+        class_names = ['cat', 'dog']
+        filepath = '/path/to/your/image.jpg'
+
+        def custom_preprocess_fn(image):
+            # Custom preprocessing steps
+            return processed_image
+
+        pred_and_plot_random_image(
+            filepath=filepath,
+            model=model,
+            class_names=class_names,
+            preprocess_fn=custom_preprocess_fn,
+            is_categorical=False,
+            color_channels=3,
+            img_shape=224,
+            figsize=(10, 5)
+        )
+
+    Note:
+        - The function assumes the provided model expects input images of shape [None, Height, Width, Color Channels].
+        - If a preprocess function is provided, it should handle the resizing and normalization of the image as needed by the model.
+    """
+
+    img = tf.io.read_file(filepath)
+    img = tf.io.decode_image(img, channels=color_channels)
+    original_img = img
+    img = tf.image.resize(img, [img_shape, img_shape])
+
+    if preprocess_fn:
+        img_preprocessed = preprocess_fn(img)
+        pred_probs = model.predict(
+            tf.expand_dims(img_preprocessed, axis=0)
+        )  # model needs shape [None, Height, Width, Color Channels]
+        img_to_show = img_preprocessed.numpy()
+        img_to_show = (img_to_show - img_to_show.min()) / (
+            img_to_show.max() - img_to_show.min()
+        )  # get preprocessed image back to [0, 1] for plotting
+    else:
+        pred_probs = model.predict(tf.expand.dims(img, axis=0))
+        img_to_show = img.numpy() / 255.0
+
+    if is_categorical:
+        pred_class = class_names[pred_probs.argmax()]
+    else:
+        pred_prob = pred_probs.reshape(-1)[0]
+        pred_class = class_names[int(pred_prob > 0.5)]
+    
+    fig, ax = plt.subplots(1, 2, figsize=figsize)
+
+    # original image
+    ax[0].imshow(original_img.numpy() / 255.0)
+    ax[0].axis('off')
+    ax[0].set_title(f'Original Image\n Shape: {original_img.shape}')
+
+    # Predicted Class (image)
+    ax[1].imshow(img_to_show)
+    ax[1].axis('off')
+    ax[1].set_title(f'Predicted Class: {pred_class}\n Shape: {img_to_show.shape}')
+
+    plt.tight_layout()
+    plt.show()
