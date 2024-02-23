@@ -1,13 +1,12 @@
 import os
 import random
 
-import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-import tensorflow as tf
-from tensorflow.keras.models import Model
-
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import tensorflow as tf
+from tensorflow.keras.models import Model
 
 
 def plot_and_predict_img_from_folder(
@@ -280,14 +279,14 @@ def pred_and_plot_random_image(
     filepath: str,
     model: Model,
     class_names: list,
-    preprocess_fn = None,
+    preprocess_fn=None,
     is_categorical: bool = False,
     color_channels: int = 3,
     img_shape: int = 224,
-    figsize: tuple[int, int] = (10, 5)
+    figsize: tuple[int, int] = (10, 5),
 ) -> None:
     """
-    Loads an image from a specified filepath, optional processes it, predicts its class using a trained model, and plots both the original and processed images 
+    Loads an image from a specified filepath, optional processes it, predicts its class using a trained model, and plots both the original and processed images
     side by side.
 
     Args:
@@ -353,18 +352,18 @@ def pred_and_plot_random_image(
     else:
         pred_prob = pred_probs.reshape(-1)[0]
         pred_class = class_names[int(pred_prob > 0.5)]
-    
+
     fig, ax = plt.subplots(1, 2, figsize=figsize)
 
     # original image
     ax[0].imshow(original_img.numpy() / 255.0)
-    ax[0].axis('off')
-    ax[0].set_title(f'Original Image\n Shape: {original_img.shape}')
+    ax[0].axis("off")
+    ax[0].set_title(f"Original Image\n Shape: {original_img.shape}")
 
     # Predicted Class (image)
     ax[1].imshow(img_to_show)
-    ax[1].axis('off')
-    ax[1].set_title(f'Predicted Class: {pred_class}\n Shape: {img_to_show.shape}')
+    ax[1].axis("off")
+    ax[1].set_title(f"Predicted Class: {pred_class}\n Shape: {img_to_show.shape}")
 
     plt.tight_layout()
     plt.show()
