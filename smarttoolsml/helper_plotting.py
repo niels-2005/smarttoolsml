@@ -36,7 +36,7 @@ def plot_images_from_folder(
 
     Example:
         plot_images_from_folder(folder='path/to/image/folder', figsize=(12, 12), num_images=9, num_subplot=3)
-        
+
     Important:
         Ensure that `num_images` is a perfect square of `num_subplot` (e.g., 16 images for 4 subplots),
         to guarantee correct display. Otherwise, displaying the subplots may not function as expected.
@@ -81,11 +81,13 @@ def get_random_image_and_class(folder: str) -> tuple[np.ndarray, str]:
     return img, random_target_folder
 
 
-def plot_images_from_dataset(files: tf.data.Dataset,
-                             class_names: list, 
-                             num_images: int = 16,
-                             num_subplot: int = 4,
-                             figsize: tuple[int, int] = (12, 12)) -> None:
+def plot_images_from_dataset(
+    files: tf.data.Dataset,
+    class_names: list,
+    num_images: int = 16,
+    num_subplot: int = 4,
+    figsize: tuple[int, int] = (12, 12),
+) -> None:
     """
     Plots a selection of images from a TensorFlow dataset in a grid layout.
 
@@ -111,27 +113,26 @@ def plot_images_from_dataset(files: tf.data.Dataset,
     Example usage:
         # Assuming `dataset` is your TensorFlow dataset and `class_names` is your list of class names.
 
-        plot_images_from_dataset(files=dataset, 
-                                 class_names=class_names, 
-                                 num_images=9, 
-                                 num_subplot=3, 
+        plot_images_from_dataset(files=dataset,
+                                 class_names=class_names,
+                                 num_images=9,
+                                 num_subplot=3,
                                  figsize=(10, 10))
-        
+
     Note:
         - The function automatically converts the labels to integers and reshapes them to a flat array
           to ensure proper indexing. Images are converted to 'uint8' format for proper display.
         - It is assumed that the dataset returns images in a format compatible with matplotlib's `imshow` method.
         - Ensure `num_images` does not exceed the actual number of images in the batch provided by `files.take(1)`.
     """
-    
+
     plt.figure(figsize=figsize)
 
     for images, labels in files.take(1):
         labels = labels.numpy().astype(int).reshape(-1)
-        
+
         for i in range(num_images):
             plt.subplot(num_subplot, num_subplot, i + 1)
             plt.imshow(images[i].numpy().astype("uint8"))
             plt.title(f"{class_names[labels[i]]}, {images[i].shape}")
             plt.axis("off")
-

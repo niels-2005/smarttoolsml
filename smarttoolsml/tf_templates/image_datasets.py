@@ -1,8 +1,8 @@
 import numpy as np
 import tensorflow as tf
-from tqdm import tqdm
-from tensorflow.keras.preprocessing import image_dataset_from_directory
 from tensorflow.keras import Model
+from tensorflow.keras.preprocessing import image_dataset_from_directory
+from tqdm import tqdm
 
 
 def get_image_datasets(
