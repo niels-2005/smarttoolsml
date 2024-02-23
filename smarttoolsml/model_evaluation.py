@@ -1,6 +1,9 @@
 import itertools
 import time
 
+import random 
+import os
+
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import numpy as np
@@ -220,7 +223,7 @@ def calculate_classes_metrics(
         y_true, y_pred, target_names=classes, output_dict=True
     )
 
-    # Delete Metrics
+    # Delete bottom Metrics
     report.pop("accuracy", None)
     report.pop("macro avg", None)
     report.pop("weighted avg", None)
@@ -286,3 +289,95 @@ def plot_metric_from_classes(
             ha="center",
             va="center",
         )
+
+
+def plot_and_predict_img_from_folder(
+    model: Model,
+    folder: str, 
+    class_names: list,
+    img_shape: int = 224, 
+    preprocess_fn=None,
+    is_categorical: bool = False,
+    num_images: int = 16,
+    num_subplot: int = 4,
+    figsize: tuple[int, int] = (12, 12)
+) -> None:
+    """
+    Plots and predicts a specified number of images from folders, displaying them in a grid layout along with their predicted and actual class labels.
+
+    This function selects a random set of images from specified class folders within the given directory, applies a preprocessing function if provided, 
+    and uses a trained model to predict the class of each image. It then displays these images in a grid layout, highlighting the title in green if the 
+    prediction matches the actual class, or in red otherwise. The probability of the predicted class is also shown in the title.
+
+    Args:
+        model (Model): The trained model used for predictions.
+        folder (str): The path to the directory containing class subfolders with images.
+        class_names (list): A list of class names corresponding to the subfolders in the directory.
+        img_shape (int, optional): The shape to which images are resized before prediction. Default is 224.
+        preprocess_fn (callable, optional): The preprocessing function applied to images before prediction. If None, images are scaled to [0, 1]. Default is None.
+        is_categorical (bool, optional): Whether the prediction task is categorical (True) or binary (False). Default is False.
+        num_images (int, optional): The total number of images to display. Default is 16. Ensure that `num_images` is a square number to form a perfect grid.
+        num_subplot (int, optional): The number of images per row and column in the grid layout. Default is 4.
+        figsize (tuple[int, int], optional): The size of the figure to display the images. Defaults to (12, 12).
+
+    Returns:
+        None: This function does not return any value. It directly plots the images using matplotlib.
+
+    Example usage:
+
+        from tensorflow.keras.applications.resnet_v2 import preprocess_input
+    
+        TEST_DIR = '/test' (important that /test, not /test/)
+        class_names=['cat', 'dog']
+
+        def preprocess_fn(image):
+            return preprocess_input(image)
+
+        plot_and_predict_img_from_folder(model=model,
+                                         folder=TEST_DIR,
+                                         class_names=class_names,
+                                         img_shape=224,
+                                         preprocess_fn=preprocess_fn,
+                                         is_categorical=False,
+                                         num_images=16,
+                                         num_subplot=4,
+                                         figsize=(12, 12))
+
+    Note:
+        - The function randomly selects images from the specified folder, so the displayed images will vary with each call.
+        - Ensure the `folder` argument points to a directory structure compatible with the expected class subfolders.
+        - The preprocessing function should be compatible with the model's expected input format.
+    """
+
+    plt.figure(figsize=figsize)
+
+    for i in range(num_images):
+        class_name = random.choice(class_names)
+        filename = random.choice(os.listdir(os.path.join(folder, class_name)))
+        filepath = os.path.join(folder, class_name, filename)
+
+        img = tf.io.read_file(filepath)
+        img = tf.io.decode_image(img, channels=3, expand_animations=False)
+        img = tf.image.resize(img, [img_shape, img_shape])
+
+        if preprocess_fn:
+            img_preprocessed = preprocess_fn(img)
+            pred_probs = model.predict(tf.expand_dims(img_preprocessed, axis=0))
+            img_to_show = img_preprocessed.numpy()
+            img_to_show = (img_to_show - img_to_show.min()) / (img_to_show.max() - img_to_show.min()) 
+        else:
+            pred_probs = model.predict(tf.expand.dims(img, axis=0))
+            img_to_show = img.numpy() / 255.
+
+        if is_categorical:
+            pred_class = class_names[pred_probs.argmax()]
+        else:
+            pred_prob = pred_probs.flatten()[0]
+            pred_class = class_names[int(pred_prob > 0.5)]
+                
+        plt.subplot(num_subplot, num_subplot, i+1)
+        plt.imshow(img_to_show)
+        plt.axis(False)
+
+        title_color = 'g' if class_name == pred_class else 'r'
+        plt.title(f'Actual: {class_name}, Pred: {pred_class}, Prob: {pred_probs.max():.2f}', color=title_color)
