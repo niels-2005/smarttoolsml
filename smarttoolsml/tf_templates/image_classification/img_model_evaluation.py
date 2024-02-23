@@ -17,71 +17,85 @@ def plot_and_predict_img_from_folder(
     img_shape: int = 224,
     preprocess_fn=None,
     is_categorical: bool = False,
-    num_images: int = 16,
-    num_subplot: int = 4,
-    figsize: tuple[int, int] = (12, 12),
+    color_channels: int = 3,
+    n_images: int = 20,
+    images_per_row: int = 4,
+    figsize_width: int = 20,
+    fontsize: int = 10,
 ) -> None:
     """
-    Plots and predicts a specified number of images from folders, displaying them in a grid layout along with their predicted and actual class labels.
+    Displays a specified number of images from given folders in a grid layout, along with their actual and predicted class labels, using a trained model
+    for predictions.
 
     Args:
-        model (Model): The trained model used for predictions.
-        folder (str): The path to the directory containing class subfolders with images.
+        model (Model): The trained model used for making predictions.
+        folder (str): The path to the directory containing class subfolders with images. Each subfolder represents a class.
         class_names (list): A list of class names corresponding to the subfolders in the directory.
-        img_shape (int, optional): The shape to which images are resized before prediction. Default is 224.
-        preprocess_fn (callable, optional): The preprocessing function applied to images before prediction. If None, images are scaled to [0, 1]. Default is None.
-        is_categorical (bool, optional): Whether the prediction task is categorical (True) or binary (False). Default is False.
-        num_images (int, optional): The total number of images to display. Default is 16. Ensure that `num_images` is a square number to form a perfect grid.
-        num_subplot (int, optional): The number of images per row and column in the grid layout. Default is 4.
-        figsize (tuple[int, int], optional): The size of the figure to display the images. Defaults to (12, 12).
-
-    Returns:
-        None: This function does not return any value. It directly plots the images using matplotlib.
+        img_shape (int, optional): The target size to which the images are resized before prediction. Defaults to 224.
+        preprocess_fn (callable, optional): The preprocessing function applied to images before prediction. If None, images are scaled to [0, 1]. Defaults to None.
+        is_categorical (bool, optional): Specifies whether the classification task is categorical (True) or binary (False). Defaults to False.
+        color_channels (int, optional): The number of color channels in the images. Defaults to 3 for RGB images.
+        n_images (int, optional): The total number of images to display. Defaults to 20.
+        images_per_row (int, optional): The number of images displayed per row in the grid layout. Defaults to 4.
+        figsize_width (int, optional): The width of the figure used to display the images. Defaults to 20.
+        fontsize (int, optional): The font size used for the image titles. Defaults to 10.
 
     Example usage:
+        from tensorflow.keras.models import load_model
+        from tensorflow.keras.applications.resnet50 import preprocess_input
 
-        from tensorflow.keras.applications.resnet_v2 import preprocess_input
-
-        TEST_DIR = '/test' (important that /test, not /test/)
-        class_names=['cat', 'dog']
+        model = load_model('path/to/your/model.h5')
+        folder = '/test' (important that /test, not /test/)
+        class_names = ['cat', 'dog']
 
         def preprocess_fn(image):
             return preprocess_input(image)
 
         plot_and_predict_img_from_folder(model=model,
-                                         folder=TEST_DIR,
+                                         folder=folder,
                                          class_names=class_names,
                                          img_shape=224,
-                                         preprocess_fn=preprocess_fn,
-                                         is_categorical=False,
-                                         num_images=16,
-                                         num_subplot=4,
-                                         figsize=(12, 12))
+                                         preprocess_fn=custom_preprocess_fn,
+                                         is_categorical=True,
+                                         color_channels=3,
+                                         n_images=20,
+                                         images_per_row=4,
+                                         figsize_width=20,
+                                         fontsize=10)
 
     Note:
         - The function randomly selects images from the specified folder, so the displayed images will vary with each call.
         - Ensure the `folder` argument points to a directory structure compatible with the expected class subfolders.
         - The preprocessing function should be compatible with the model's expected input format.
     """
+    n_cols = images_per_row
+    n_rows = (n_images + n_cols - 1) // n_cols
 
-    plt.figure(figsize=figsize)
+    fig, ax = plt.subplots(
+        nrows=n_rows, ncols=n_cols, figsize=(figsize_width, n_rows * 5)
+    )
+    ax = ax.reshape(-1)  # needed for single subplots
 
-    for i in range(num_images):
+    for i in range(n_images):
+
         class_name = random.choice(class_names)
-        filename = random.choice(os.listdir(os.path.join(folder, class_name)))
+        filenames = os.listdir(os.path.join(folder, class_name))
+        filename = random.choice(filenames)
         filepath = os.path.join(folder, class_name, filename)
 
         img = tf.io.read_file(filepath)
-        img = tf.io.decode_image(img)
+        img = tf.io.decode_image(img, channels=color_channels)
         img = tf.image.resize(img, [img_shape, img_shape])
 
         if preprocess_fn:
             img_preprocessed = preprocess_fn(img)
-            pred_probs = model.predict(tf.expand_dims(img_preprocessed, axis=0))
+            pred_probs = model.predict(
+                tf.expand_dims(img_preprocessed, axis=0)
+            )  # model needs shape [None, 224, 224, 3]
             img_to_show = img_preprocessed.numpy()
             img_to_show = (img_to_show - img_to_show.min()) / (
                 img_to_show.max() - img_to_show.min()
-            )
+            )  # get preprocessed image back to [0, 1] for plotting
         else:
             pred_probs = model.predict(tf.expand.dims(img, axis=0))
             img_to_show = img.numpy() / 255.0
@@ -89,18 +103,24 @@ def plot_and_predict_img_from_folder(
         if is_categorical:
             pred_class = class_names[pred_probs.argmax()]
         else:
-            pred_prob = pred_probs.flatten()[0]
+            pred_prob = pred_probs.reshape(-1)[0]
             pred_class = class_names[int(pred_prob > 0.5)]
 
-        plt.subplot(num_subplot, num_subplot, i + 1)
-        plt.imshow(img_to_show)
-        plt.axis(False)
-
+        ax[i].imshow(img_to_show)
+        ax[i].axis("off")
         title_color = "g" if class_name == pred_class else "r"
-        plt.title(
+        ax[i].set_title(
             f"Actual: {class_name}, Pred: {pred_class}, Prob: {pred_probs.max():.2f}",
             color=title_color,
+            fontsize=fontsize,
         )
+
+    # ignore empty subplots
+    for j in range(i + 1, n_rows * n_cols):
+        ax[j].axis("off")
+
+    plt.tight_layout()
+    plt.show()
 
 
 def get_filepaths(files: tf.data.Dataset, path: str) -> np.ndarray:
@@ -127,7 +147,7 @@ def get_filepaths(files: tf.data.Dataset, path: str) -> np.ndarray:
     filepaths = []
 
     for filepath in files.list_files(path, shuffle=False):
-        decoded_filepath = filepath.numpy().decode('utf-8')
+        decoded_filepath = filepath.numpy().decode("utf-8")
         filepaths.append(decoded_filepath)
 
     return np.array(filepaths)
@@ -191,17 +211,23 @@ def get_predictions_as_df(
         }
     )
 
-    pred_df['pred_correct'] = pred_df['y_true'] == pred_df['y_pred']
-    wrong_predictions = pred_df[pred_df['pred_correct'] == False].sort_values('pred_conf', ascending=False)
+    pred_df["pred_correct"] = pred_df["y_true"] == pred_df["y_pred"]
+    wrong_predictions = pred_df[pred_df["pred_correct"] == False].sort_values(
+        "pred_conf", ascending=False
+    )
 
     return pred_df, wrong_predictions
 
 
-def plot_wrong_predictions(wrong_predictions: pd.DataFrame, n_images: int = 20, images_per_row: int = 4, figsize_width: int = 20, fontsize: int = 12):
+def plot_wrong_predictions(
+    wrong_predictions: pd.DataFrame,
+    n_images: int = 20,
+    images_per_row: int = 4,
+    figsize_width: int = 20,
+    fontsize: int = 12,
+):
     """
     Plots a specified number of wrong predictions from a DataFrame, displaying each image with its true and predicted class names, and image path below.
-
-    This function is designed to visually inspect the incorrect predictions made by a classification model. It plots the images in a grid layout, with each image annotated with the true and predicted class names, and the image's file path for easy identification. The layout parameters such as the number of images, images per row, figure size, and font size can be customized.
 
     Args:
         wrong_predictions (pd.DataFrame): A DataFrame containing the wrong predictions. It must include columns 'img_path', 'y_true_classname', and 'y_pred_classname'.
@@ -222,7 +248,9 @@ def plot_wrong_predictions(wrong_predictions: pd.DataFrame, n_images: int = 20, 
     n_cols = images_per_row
     n_rows = (n_images + n_cols - 1) // n_cols
 
-    fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=(figsize_width, n_rows * 5))
+    fig, axes = plt.subplots(
+        nrows=n_rows, ncols=n_cols, figsize=(figsize_width, n_rows * 5)
+    )
     axes = axes.reshape(-1)
 
     for i, row in enumerate(wrong_predictions.iloc[:n_images].itertuples()):
@@ -232,14 +260,17 @@ def plot_wrong_predictions(wrong_predictions: pd.DataFrame, n_images: int = 20, 
         pred_conf = row.pred_conf
 
         img = mpimg.imread(img_path)
-        axes[i].imshow(img/255.)
+        axes[i].imshow(img / 255.0)
 
-        axes[i].set_title(f'True: {true_classname}, Pred: {pred_classname}\n prob: {pred_conf:.4f}\n img_path: {img_path}', fontsize=fontsize)
+        axes[i].set_title(
+            f"True: {true_classname}, Pred: {pred_classname}\n prob: {pred_conf:.4f}\n img_path: {img_path}",
+            fontsize=fontsize,
+        )
 
-        axes[i].axis('off')
+        axes[i].axis("off")
 
     for j in range(i + 1, n_rows * n_cols):
-        axes[j].axis('off')
+        axes[j].axis("off")
 
     plt.tight_layout()
     plt.show()
