@@ -16,14 +16,14 @@ def tokenize_features(
     Tokenizes input texts and optionally prepares labels for training or evaluation using a pre-trained tokenizer from the Hugging Face's Transformers library. This function is designed to preprocess data for NLP models, making it ready for model training, evaluation, or inference when labels are not provided.
 
     Args:
-        tokenizer (transformers.PreTrainedTokenizer): An instance of a tokenizer, pre-trained and provided by Hugging Face's Transformers library, 
+        tokenizer (transformers.PreTrainedTokenizer): An instance of a tokenizer, pre-trained and provided by Hugging Face's Transformers library,
         used to tokenize the input texts.
-        preset_name (str): Name of the pre-trained tokenizer to use for tokenizing input texts. This parameter is used to ensure that the tokenizer 
+        preset_name (str): Name of the pre-trained tokenizer to use for tokenizing input texts. This parameter is used to ensure that the tokenizer
         is properly configured if additional setup is required.
         texts (list[str]): List of text strings to be tokenized, representing the input data for the NLP model.
-        labels (list[int], optional): List of integer labels associated with each input text. These are used for model training or evaluation if `include_labels` 
+        labels (list[int], optional): List of integer labels associated with each input text. These are used for model training or evaluation if `include_labels`
         is True and labels are provided. If no labels are provided, this should be None.
-        include_labels (bool, optional): Specifies whether to include labels in the output. If True, labels are processed and returned alongside the tokenized texts. 
+        include_labels (bool, optional): Specifies whether to include labels in the output. If True, labels are processed and returned alongside the tokenized texts.
         If False, only the tokenized texts are returned. Useful for processing test data without labels. Defaults to True.
         padding (bool, optional): Specifies whether to pad the tokenized input sequences to the longest sequence in the batch. Defaults to True.
         truncation (bool, optional): Specifies whether to truncate the tokenized input sequences to the model's maximum input length. Defaults to True.
