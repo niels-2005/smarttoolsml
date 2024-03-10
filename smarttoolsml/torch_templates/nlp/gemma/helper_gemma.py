@@ -1,20 +1,20 @@
 import keras
 import keras_nlp
+import pandas as pd
 
-
-def preprocess_df_to_gemma(file, instruction, output):
+def preprocess_df_to_gemma(df: pd.DataFrame, instruction: str, output: str):
     """
     Preprocesses a DataFrame for use with Gemma by formatting instructions and responses.
 
     Args:
-        file (pd.DataFrame): The DataFrame containing the data to be processed.
-        instruction (str): The name of the column in 'file' that contains the instructions.
-        output (str): The name of the column in 'file' that contains the expected outputs.
+        df (pd.DataFrame): The DataFrame containing the data to be processed.
+        instruction (str): The name of the column in df that contains the instructions.
+        output (str): The name of the column in df that contains the expected outputs.
 
     Returns:
         list: A list of formatted strings, each combining an instruction and its associated response from the DataFrame.
     """
-    data = file.apply(lambda row: f'Instruction:\n{row[instruction]}\n\nResponse:{row[output]}', axis=1).values.tolist()
+    data = df.apply(lambda row: f'Instruction:\n{row[instruction]}\n\nResponse:{row[output]}', axis=1).values.tolist()
     return data
     
 
