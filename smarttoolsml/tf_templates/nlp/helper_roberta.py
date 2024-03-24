@@ -1,17 +1,18 @@
-import numpy as np 
-import transformers
+import numpy as np
 import tensorflow as tf
+import transformers
 
 
-def tokenize_data(data: list[str], 
-                  tokenizer: transformers.RobertaTokenizerFast, 
-                  max_len: int = 512,
-                  add_special_tokens: bool = True,
-                  padding: str = "max_length",
-                  return_attention_masks: bool = True     
-                  ) -> tuple[np.ndarray, np.ndarray]:
+def tokenize_data(
+    data: list[str],
+    tokenizer: transformers.RobertaTokenizerFast,
+    max_len: int = 512,
+    add_special_tokens: bool = True,
+    padding: str = "max_length",
+    return_attention_masks: bool = True,
+) -> tuple[np.ndarray, np.ndarray]:
     """
-    Tokenizes a list of text strings using a RoBERTa tokenizer, preparing the data for input into a RoBERTa model. 
+    Tokenizes a list of text strings using a RoBERTa tokenizer, preparing the data for input into a RoBERTa model.
     This function converts text into sequences of input IDs and generates attention masks to differentiate between real tokens and padding.
     It's specifically tailored for preprocessing data for RoBERTa models.
 
@@ -51,16 +52,18 @@ def tokenize_data(data: list[str],
     return np.array(input_ids), np.array(attention_masks)
 
 
-def create_roberta_model(roberta_model: transformers.TFRobertaPreTrainedModel, 
-                         opt: tf.keras.optimizers.Optimizer, 
-                         loss: tf.keras.losses.Loss, 
-                         metric: tf.keras.metrics.Metric,
-                         num_classes: int, 
-                         is_categorical: bool = True,
-                         max_len: int = 512,
-                         trainable_backbone: bool = True) -> tf.keras.Model:
+def create_roberta_model(
+    roberta_model: transformers.TFRobertaPreTrainedModel,
+    opt: tf.keras.optimizers.Optimizer,
+    loss: tf.keras.losses.Loss,
+    metric: tf.keras.metrics.Metric,
+    num_classes: int,
+    is_categorical: bool = True,
+    max_len: int = 512,
+    trainable_backbone: bool = True,
+) -> tf.keras.Model:
     """
-    Initializes and compiles a TensorFlow model integrating a pre-trained RoBERTa model with an option to freeze or unfreeze the RoBERTa backbone. 
+    Initializes and compiles a TensorFlow model integrating a pre-trained RoBERTa model with an option to freeze or unfreeze the RoBERTa backbone.
     Adds a dense layer on top for classification and compiles the model with the specified optimizer, loss, and metrics.
 
     Args:
@@ -82,11 +85,11 @@ def create_roberta_model(roberta_model: transformers.TFRobertaPreTrainedModel,
         loss = tf.keras.losses.CategoricalCrossentropy()
         accuracy = tf.keras.metrics.CategoricalAccuracy()
 
-        model = create_roberta_model(roberta_model=roberta_base, 
-                                    opt=opt, 
-                                    loss=loss, 
-                                    metric=accuracy, 
-                                    num_classes=3, 
+        model = create_roberta_model(roberta_model=roberta_base,
+                                    opt=opt,
+                                    loss=loss,
+                                    metric=accuracy,
+                                    num_classes=3,
                                     is_categorical=True,
                                     max_len=256,
                                     trainable_backbone=False)
@@ -103,18 +106,22 @@ def create_roberta_model(roberta_model: transformers.TFRobertaPreTrainedModel,
 
     # input layers
     input_ids = tf.keras.Input(shape=(max_len,), dtype="int32", name="input_ids")
-    attention_masks = tf.keras.Input(shape=(max_len,), dtype="int32", name="attention_masks")
-    
+    attention_masks = tf.keras.Input(
+        shape=(max_len,), dtype="int32", name="attention_masks"
+    )
+
     # roberta model
     output = roberta_model([input_ids, attention_masks])
     output = output[1]
 
     # categorical or binary classification
     if is_categorical:
-        output = tf.keras.layers.Dense(num_classes, activation="softmax", name="output")(output)
+        output = tf.keras.layers.Dense(
+            num_classes, activation="softmax", name="output"
+        )(output)
     else:
         output = tf.keras.layers.Dense(1, activation="sigmoid", name="output")(output)
-    
+
     # create and compile model
     model = tf.keras.models.Model(inputs=[input_ids, attention_masks], outputs=output)
     model.compile(optimizer=opt, loss=loss, metrics=metric)
@@ -123,19 +130,19 @@ def create_roberta_model(roberta_model: transformers.TFRobertaPreTrainedModel,
 
 def tokenize_for_pred(
     text: str,
-    tokenizer: transformers.RobertaTokenizerFast, 
-    max_len: int = 512, 
-    add_special_tokens: bool = True, 
+    tokenizer: transformers.RobertaTokenizerFast,
+    max_len: int = 512,
+    add_special_tokens: bool = True,
     padding: str = "max_length",
-    return_attention_mask: bool = True
+    return_attention_mask: bool = True,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
-    Tokenizes a single text string for model prediction, converting it into a sequence of input IDs and generating an attention mask. 
+    Tokenizes a single text string for model prediction, converting it into a sequence of input IDs and generating an attention mask.
 
     Args:
         text (str): The text string to be tokenized. Intended for a single sentence or text snippet.
         tokenizer (transformers.RobertaTokenizerFast): An instance of RoBERTa's tokenizer, pre-configured and ready to use.
-        max_len (int, optional): Specifies the maximum length for the tokenized sequence. 
+        max_len (int, optional): Specifies the maximum length for the tokenized sequence.
         add_special_tokens (bool, optional): If True, special tokens such as [CLS] and [SEP] will be added to the sequence.
         padding (str, optional): The strategy to apply for padding sequences to `max_len`.
         return_attention_mask (bool, optional): If True, generates an attention mask to differentiate real tokens from padding tokens.
@@ -160,23 +167,25 @@ def tokenize_for_pred(
     return np.array(encoded["input_ids"]), np.array(encoded["attention_mask"])
 
 
-def predict_on_text(model: tf.keras.Model, 
-                    text: str, 
-                    classes: list[str], 
-                    tokenizer: transformers.RobertaTokenizerFast,
-                    max_len: int = 512,
-                    add_special_tokens: bool = True,
-                    padding: str = "max_length",
-                    return_attention_mask: bool = True, 
-                    is_categorical: bool = True) -> None:
+def predict_on_text(
+    model: tf.keras.Model,
+    text: str,
+    classes: list[str],
+    tokenizer: transformers.RobertaTokenizerFast,
+    max_len: int = 512,
+    add_special_tokens: bool = True,
+    padding: str = "max_length",
+    return_attention_mask: bool = True,
+    is_categorical: bool = True,
+) -> None:
     """
-    Performs a prediction on a given text using a specified TensorFlow Roberta model and prints the prediction result. 
-    The function tokenizes the input text according to the provided tokenizer settings, 
-    feeds the tokenized input to the model, and interprets the model's output as either a class label (for categorical tasks) 
+    Performs a prediction on a given text using a specified TensorFlow Roberta model and prints the prediction result.
+    The function tokenizes the input text according to the provided tokenizer settings,
+    feeds the tokenized input to the model, and interprets the model's output as either a class label (for categorical tasks)
     or a binary decision (for binary classification tasks).
 
     Args:
-        model (tf.keras.Model): The pre-trained and compiled TensorFlow model used for making predictions. 
+        model (tf.keras.Model): The pre-trained and compiled TensorFlow model used for making predictions.
         text (str): The text string on which the prediction is to be made. This is the raw text data to be processed.
         classes (list[str]): A list of class names corresponding to the possible outputs of the model.
         tokenizer (transformers.RobertaTokenizerFast): A tokenizer instance compatible with the RoBERTa architecture, used for tokenizing the input text.
@@ -197,12 +206,14 @@ def predict_on_text(model: tf.keras.Model,
         predict_on_text(model, text, classes, tokenizer)
     """
     # get tokenized inputs
-    input_ids, attention_masks = tokenize_for_pred(text=text, 
-                                                   tokenizer=tokenizer, 
-                                                   max_len=max_len, 
-                                                   add_special_tokens=add_special_tokens, 
-                                                   padding=padding,
-                                                   return_attention_mask=return_attention_mask)
+    input_ids, attention_masks = tokenize_for_pred(
+        text=text,
+        tokenizer=tokenizer,
+        max_len=max_len,
+        add_special_tokens=add_special_tokens,
+        padding=padding,
+        return_attention_mask=return_attention_mask,
+    )
     # treat like batches
     pred_prob = model.predict(
         [np.expand_dims(input_ids, axis=0), np.expand_dims(attention_masks, axis=0)]

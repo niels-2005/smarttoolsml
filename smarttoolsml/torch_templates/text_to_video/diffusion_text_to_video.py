@@ -1,5 +1,5 @@
-from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
 import torch
+from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
 from diffusers.utils import export_to_video
 
 

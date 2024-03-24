@@ -1,6 +1,6 @@
-from diffusers import DiffusionPipeline
-import torch
 import matplotlib.pyplot as plt
+import torch
+from diffusers import DiffusionPipeline
 
 
 def generate_image_from_prompt(
