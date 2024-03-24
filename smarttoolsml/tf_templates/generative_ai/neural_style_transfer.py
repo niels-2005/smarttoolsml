@@ -12,7 +12,7 @@ import tensorflow_hub as hub
 from PIL import Image
 
 
-def load_img(path_to_img: str):
+def load_img(path_to_img: str) -> tf.Tensor:
     """
     Loads an image from a specified path and scales it proportionally so that its longest side is at most 512 pixels.
 
@@ -39,7 +39,7 @@ def load_img(path_to_img: str):
     return img
 
 
-def imshow(ax, image, title=None, display_size=(112, 224)):
+def imshow(ax: plt.Axes, image: tf.Tensor, title: str =None, display_size: tuple[int, int] =(112, 224)) -> None:
     """
     Displays an image on a given axis object, scaling the image to a specified size.
 
@@ -61,7 +61,7 @@ def imshow(ax, image, title=None, display_size=(112, 224)):
         ax.set_title(title)
 
 
-def tensor_to_image(tensor) -> PIL.Image:
+def tensor_to_image(tensor: tf.Tensor) -> PIL.Image:
     """
     Converts an image tensor into a PIL.Image object.
 
