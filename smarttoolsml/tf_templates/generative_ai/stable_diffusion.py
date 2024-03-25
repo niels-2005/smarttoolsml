@@ -22,7 +22,13 @@ def plot_images(images, figsize: tuple[int, int] = (20, 20)):
         plt.axis("off")
 
 
-def generate_images(prompt: str, img_width: int = 512, img_height: int = 512, n_images: int = 1, figsize: tuple[int, int] = (20, 20)) -> np.ndarray:
+def generate_images(
+    prompt: str,
+    img_width: int = 512,
+    img_height: int = 512,
+    n_images: int = 1,
+    figsize: tuple[int, int] = (20, 20),
+) -> np.ndarray:
     """
     Generates images based on a text prompt using the Stable Diffusion model from keras_cv.
 
@@ -49,4 +55,3 @@ def generate_images(prompt: str, img_width: int = 512, img_height: int = 512, n_
     images = model.text_to_image(prompt, batch_size=n_images)
     plot_images(images=images, figsize=figsize)
     return images
-

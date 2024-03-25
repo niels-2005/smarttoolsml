@@ -39,7 +39,12 @@ def load_img(path_to_img: str) -> tf.Tensor:
     return img
 
 
-def imshow(ax: plt.Axes, image: tf.Tensor, title: str =None, display_size: tuple[int, int] =(112, 224)) -> None:
+def imshow(
+    ax: plt.Axes,
+    image: tf.Tensor,
+    title: str = None,
+    display_size: tuple[int, int] = (112, 224),
+) -> None:
     """
     Displays an image on a given axis object, scaling the image to a specified size.
 
