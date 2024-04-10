@@ -392,3 +392,39 @@ def plot_facetgrid_scatter_with_df(df: pd.DataFrame,
     ).add_legend()
     plt.title()
     plt.show()
+
+
+def plot_pd_scatter_matrix(df: pd.DataFrame, 
+                           color_list: list, 
+                           figsize: tuple[int, int] = (10, 10), 
+                           diagonal: str = "hist", 
+                           alpha: float = 0.5, 
+                           s: int = 200, 
+                           marker: str = "*", 
+                           edgecolors: str = "black",
+                           title: str = "Scatter Matrix"):
+    """_summary_
+
+    Args:
+        df (pd.DataFrame): _description_
+        color_list (list): _description_
+        figsize (tuple[int, int], optional): _description_. Defaults to (10, 10).
+        diagonal (str, optional): _description_. Defaults to "hist".
+        alpha (float, optional): _description_. Defaults to 0.5.
+        s (int, optional): _description_. Defaults to 200.
+        marker (str, optional): _description_. Defaults to "*".
+        edgecolors (str, optional): _description_. Defaults to "black".
+    """
+    pd.plotting.scatter_matrix(
+        df.loc[:, df.columns != "class"],
+        c=color_list,
+        figsize=figsize,
+        diagonal=diagonal,
+        alpha=alpha,
+        s=s,
+        marker=marker,
+        edgecolors=edgecolors,
+    )
+    plt.title(title)
+    plt.show()
+    
