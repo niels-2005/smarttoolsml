@@ -1,3 +1,3 @@
-Bibliothek noch im Aufbau.
+Library still under construction.
 
-Enthält aber bereits viele wertvolle Templates und Funktionen für EDA, Machine Learning, Deep Learning usw.
+However, it already contains many valuable templates and functions for EDA, machine learning, deep learning, etc.
