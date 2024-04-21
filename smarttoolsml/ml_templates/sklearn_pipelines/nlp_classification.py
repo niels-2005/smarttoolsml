@@ -1,33 +1,77 @@
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, TfidfTransformer
-from sklearn.linear_model import LogisticRegression, RidgeClassifier, PassiveAggressiveClassifier, Perceptron
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import LogisticRegression, RidgeClassifier, PassiveAggressiveClassifier, Perceptron, SGDClassifier
 from sklearn.svm import SVC, LinearSVC
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier, ExtraTreesClassifier
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier, ExtraTreesClassifier, BaggingClassifier
+from sklearn.naive_bayes import MultinomialNB
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
-from sklearn.model_selection import cross_val_score
-import numpy as np
+import numpy as np 
 import matplotlib.pyplot as plt
+from sklearn.model_selection import cross_val_score
 
 pipelines = [
+    Pipeline([('vect', CountVectorizer()), ('clf', LogisticRegression())]),
     Pipeline([('tfidf', TfidfVectorizer()), ('clf', LogisticRegression())]),
+    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', LogisticRegression())]),
+
+    Pipeline([('vect', CountVectorizer()), ('clf', MultinomialNB())]),
+    Pipeline([('tfidf', TfidfVectorizer()), ('clf', MultinomialNB())]),
     Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', MultinomialNB())]),
+
+    Pipeline([('vect', CountVectorizer()), ('clf', SVC())]),
     Pipeline([('tfidf', TfidfVectorizer()), ('clf', SVC())]),
+    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', SVC())]),
+
     Pipeline([('vect', CountVectorizer()), ('clf', RandomForestClassifier())]),
+    Pipeline([('tfidf', TfidfVectorizer()), ('clf', RandomForestClassifier())]),
+    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', RandomForestClassifier())]),
+
+    Pipeline([('vect', CountVectorizer()), ('clf', GradientBoostingClassifier())]),
     Pipeline([('tfidf', TfidfVectorizer()), ('clf', GradientBoostingClassifier())]),
+    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', GradientBoostingClassifier())]),
+
     Pipeline([('vect', CountVectorizer()), ('clf', PassiveAggressiveClassifier())]),
+    Pipeline([('tfidf', TfidfVectorizer()), ('clf', PassiveAggressiveClassifier())]),
+    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', PassiveAggressiveClassifier())]),
+
+    Pipeline([('vect', CountVectorizer()), ('clf', DecisionTreeClassifier())]),
     Pipeline([('tfidf', TfidfVectorizer()), ('clf', DecisionTreeClassifier())]),
+    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', DecisionTreeClassifier())]),
+
+    Pipeline([('vect', CountVectorizer()), ('clf', RidgeClassifier())]),
+    Pipeline([('tfidf', TfidfVectorizer()), ('clf', RidgeClassifier())]),
     Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', RidgeClassifier())]),
+
+    Pipeline([('vect', CountVectorizer()), ('clf', KNeighborsClassifier())]),
     Pipeline([('tfidf', TfidfVectorizer()), ('clf', KNeighborsClassifier())]),
-    Pipeline([('vect', CountVectorizer()), ('clf', AdaBoostClassifier(algorithm='SAMME'))]),
+    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', KNeighborsClassifier())]),
+
+    Pipeline([('vect', CountVectorizer()), ('clf', AdaBoostClassifier())]),
+    Pipeline([('tfidf', TfidfVectorizer()), ('clf', AdaBoostClassifier())]),
+    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', AdaBoostClassifier())]),
+
+    Pipeline([('vect', CountVectorizer()), ('clf', XGBClassifier())]),
     Pipeline([('tfidf', TfidfVectorizer()), ('clf', XGBClassifier())]),
+    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', XGBClassifier())]),
+
     Pipeline([('vect', CountVectorizer()), ('clf', ExtraTreesClassifier())]),
-    Pipeline([('tfidf', TfidfVectorizer()), ('clf', LGBMClassifier(force_col_wise=True))]),
-    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', LinearSVC(dual=True))]),
-    Pipeline([('tfidf', TfidfVectorizer()), ('clf', Perceptron())])
+    Pipeline([('tfidf', TfidfVectorizer()), ('clf', ExtraTreesClassifier())]),
+    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', ExtraTreesClassifier())]),
+
+    Pipeline([('vect', CountVectorizer()), ('clf', LGBMClassifier())]),
+    Pipeline([('tfidf', TfidfVectorizer()), ('clf', LGBMClassifier())]),
+    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', LGBMClassifier())]),
+
+    Pipeline([('vect', CountVectorizer()), ('clf', LinearSVC())]),
+    Pipeline([('tfidf', TfidfVectorizer()), ('clf', LinearSVC())]),
+    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', LinearSVC())]),
+
+    Pipeline([('vect', CountVectorizer()), ('clf', Perceptron())]),
+    Pipeline([('tfidf', TfidfVectorizer()), ('clf', Perceptron())]),
+    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', Perceptron())])
 ]
 
 
