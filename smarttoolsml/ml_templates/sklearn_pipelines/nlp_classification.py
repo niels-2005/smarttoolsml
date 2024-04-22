@@ -1,4 +1,5 @@
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, TfidfTransformer
 from sklearn.linear_model import LogisticRegression, RidgeClassifier, PassiveAggressiveClassifier, Perceptron, SGDClassifier
 from sklearn.svm import SVC, LinearSVC
@@ -11,6 +12,7 @@ from lightgbm import LGBMClassifier
 import numpy as np 
 import matplotlib.pyplot as plt
 from sklearn.model_selection import cross_val_score
+
 
 pipelines = [
     Pipeline([('vect', CountVectorizer()), ('clf', LogisticRegression())]),
@@ -49,9 +51,9 @@ pipelines = [
     Pipeline([('tfidf', TfidfVectorizer()), ('clf', KNeighborsClassifier())]),
     Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', KNeighborsClassifier())]),
 
-    Pipeline([('vect', CountVectorizer()), ('clf', AdaBoostClassifier())]),
-    Pipeline([('tfidf', TfidfVectorizer()), ('clf', AdaBoostClassifier())]),
-    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', AdaBoostClassifier())]),
+    Pipeline([('vect', CountVectorizer()), ('clf', AdaBoostClassifier(algorithm='SAMME'))]),
+    Pipeline([('tfidf', TfidfVectorizer()), ('clf', AdaBoostClassifier(algorithm='SAMME'))]),
+    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', AdaBoostClassifier(algorithm='SAMME'))]),
 
     Pipeline([('vect', CountVectorizer()), ('clf', XGBClassifier())]),
     Pipeline([('tfidf', TfidfVectorizer()), ('clf', XGBClassifier())]),
@@ -60,10 +62,6 @@ pipelines = [
     Pipeline([('vect', CountVectorizer()), ('clf', ExtraTreesClassifier())]),
     Pipeline([('tfidf', TfidfVectorizer()), ('clf', ExtraTreesClassifier())]),
     Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', ExtraTreesClassifier())]),
-
-    Pipeline([('vect', CountVectorizer()), ('clf', LGBMClassifier())]),
-    Pipeline([('tfidf', TfidfVectorizer()), ('clf', LGBMClassifier())]),
-    Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', LGBMClassifier())]),
 
     Pipeline([('vect', CountVectorizer()), ('clf', LinearSVC())]),
     Pipeline([('tfidf', TfidfVectorizer()), ('clf', LinearSVC())]),
@@ -75,37 +73,38 @@ pipelines = [
 ]
 
 
-def compare_pipelines(X_train: np.ndarray, y_train: np.ndarray, cv: int = 5, plot_comparison: bool = True):
+def compare_pipelines(X_train: np.ndarray, y_train: np.ndarray, cv, plot_comparison: bool = True) -> None:
     """
     Compares multiple machine learning pipelines on the given training data using cross-validation and optionally plots the comparison.
 
     Args:
         X_train (np.ndarray): The training input samples.
         y_train (np.ndarray): The target labels for the training input samples.
-        cv (int): The number of cross-validation folds to use (default is 5).
+        cv (object): Cross-validation splitting strategy, e.g., an instance of StratifiedKFold.
         plot_comparison (bool): If True, plot the accuracy comparison as a horizontal bar chart (default is True).
 
     Returns:
         None: This function does not return a value but prints out the accuracy for each classifier and may display a plot.
 
     Example usage:
-        X_train = np.array([...])  # Training data
-        y_train = np.array([...])  # Labels
-        compare_pipelines(X_train, y_train, cv=5, plot_comparison=True)
+        cv = StratifiedKFold(n_splits=5)
+        X_train = X_train[:5000]
+        y_train = y_train[:5000]
+        compare_pipelines(X_train, y_train, cv=cv, plot_comparison=True)
     """
-    classifier_names = []
+    pipeline_descriptions = []
     accuracy_scores = []
 
     for idx, pipeline in enumerate(pipelines):
+        step_names = ' | '.join([type(step[1]).__name__ for step in pipeline.steps])
         cv_scores = cross_val_score(pipeline, X_train, y_train, cv=cv, scoring='accuracy')
         mean_score = np.mean(cv_scores)
-        classifier_name = type(pipeline.named_steps['clf']).__name__
-        classifier_names.append(classifier_name)
+        pipeline_descriptions.append(step_names)
         accuracy_scores.append(mean_score)
-        print(f"Pipeline {idx + 1}: {classifier_name}, Accuracy: {mean_score:.4f}")
+        print(f"Pipeline {idx + 1}: {step_names}, Accuracy: {mean_score:.4f}")
     
     if plot_comparison:
-        zipped_lists = zip(accuracy_scores, classifier_names)
+        zipped_lists = zip(accuracy_scores, pipeline_descriptions)
         sorted_pairs = sorted(zipped_lists, reverse=True, key=lambda x: x[0])
         sorted_scores, sorted_names = zip(*sorted_pairs)
 
