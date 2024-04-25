@@ -4,7 +4,10 @@ from sklearn.feature_selection import RFECV
 import numpy as np
 import matplotlib.pyplot as plt
 
-def get_k_best_features(k: int , X: np.ndarray, y: np.ndarray, transform_data: bool = False):
+
+def get_k_best_features(
+    k: int, X: np.ndarray, y: np.ndarray, transform_data: bool = False
+):
     """_summary_
 
     Args:
@@ -26,13 +29,15 @@ def get_k_best_features(k: int , X: np.ndarray, y: np.ndarray, transform_data: b
         return X, y
 
 
-def rfecv_feature_selector(model, 
-                           X: np.ndarray, 
-                           y: np.ndarray, 
-                           step: int = 1, 
-                           cv: int = 5, 
-                           scoring: str = "accuracy",
-                           plot_curve: bool = True):
+def rfecv_feature_selector(
+    model,
+    X: np.ndarray,
+    y: np.ndarray,
+    step: int = 1,
+    cv: int = 5,
+    scoring: str = "accuracy",
+    plot_curve: bool = True,
+):
     """_summary_
 
     Args:
@@ -47,9 +52,7 @@ def rfecv_feature_selector(model,
         rfc = RandomForestClassifier()
         rfecv = rfecv_feature_selector(model=rfc, X, y, cv=5, plot_curve=True)
     """
-    rfecv = RFECV(
-        estimator=model, step=step, cv=cv, scoring=scoring
-    )
+    rfecv = RFECV(estimator=model, step=step, cv=cv, scoring=scoring)
     rfecv.fit(X, y)
     print("Optimal number of features :", rfecv.n_features_)
     print("Best features :", X.columns[rfecv.support_])
@@ -57,7 +60,9 @@ def rfecv_feature_selector(model,
     if plot_curve:
         plt.figure()
         plt.xlabel("Number of features selected")
-        plt.ylabel("Cross validation score (mean accuracy) of number of selected features")
+        plt.ylabel(
+            "Cross validation score (mean accuracy) of number of selected features"
+        )
         plt.plot(
             range(1, len(rfecv.cv_results_["mean_test_score"]) + 1),
             rfecv.cv_results_["mean_test_score"],
