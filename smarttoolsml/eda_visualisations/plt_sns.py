@@ -476,3 +476,18 @@ def plot_pd_scatter_matrix(
     )
     plt.title(title)
     plt.show()
+
+
+def plot_crosstab_by_series(
+    df_series_1: pd.Series,
+    df_series_2: pd.Series,
+    kind: str = "bar",
+    figsize: tuple[int, int] = (10, 6),
+    title: str = "Title",
+):
+    pd.crosstab(df_series_1, df_series_2).plot(kind=kind, figsize=figsize)
+    plt.title(title)
+    plt.xlabel("0 = No Disease, 1 = Disease")
+    plt.ylabel("Amount")
+    plt.legend(["Female", "Male"])
+    plt.show()
