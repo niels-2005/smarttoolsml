@@ -33,27 +33,20 @@ def generate_image_from_prompt(
                                            use_safetensors=True,
                                            variant='fp16',
                                            figsize=(10, 10))
-
-    Note:
-        - This function requires a CUDA-compatible GPU for model inference.
-        - The function automatically clears the GPU memory cache after generating the image to free up resources.
     """
-
+    device = "cuda" if torch.cuda.is_available() else "cpu"
     pipe = DiffusionPipeline.from_pretrained(
         preset_name,
         torch_dtype=torch_dtype,
         use_safetensors=use_safetensors,
         variant=variant,
     )
-    pipe.to("cuda")
+    pipe.to(device)
     image = pipe(prompt=prompt).images[0]
 
     plt.figure(figsize=figsize)
     plt.imshow(image)
     plt.axis("off")
     plt.show()
-
-    del pipe
-    torch.cuda.empty_cache()
 
     return image

@@ -58,6 +58,3 @@ def generate_video_from_prompt(
     video_path = export_to_video(
         video_frames, fps=fps, output_video_path=output_video_path
     )
-
-    del pipe
-    torch.cuda.empty_cache()
