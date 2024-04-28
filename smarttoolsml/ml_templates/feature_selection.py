@@ -1,8 +1,6 @@
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import chi2
-from sklearn.feature_selection import RFECV
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.feature_selection import RFECV, SelectKBest, chi2
 
 
 def get_k_best_features(

@@ -1,8 +1,8 @@
-from PIL import Image
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 import tensorflow_hub as hub
-import matplotlib.pyplot as plt
+from PIL import Image
 
 
 def preprocess_image(image_path: str) -> tf.Tensor:

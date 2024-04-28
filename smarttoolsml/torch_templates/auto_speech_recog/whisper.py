@@ -1,6 +1,6 @@
 import torch
-from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 from IPython.display import Audio
+from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 
 
 def get_pipeline(model_id: str, low_cpu_mem_usage: bool, use_safetensors: bool):
@@ -59,7 +59,7 @@ def auto_speech_recognition(
     return_result: bool = False,
 ):
     """
-    Performs automatic speech recognition on the provided audio data using a specified model, 
+    Performs automatic speech recognition on the provided audio data using a specified model,
     with an option to translate the recognized text into a specified language.
 
     Args:

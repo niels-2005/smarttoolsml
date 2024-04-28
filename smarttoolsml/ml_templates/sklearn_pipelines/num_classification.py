@@ -1,20 +1,17 @@
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
-from sklearn.linear_model import LogisticRegression, RidgeClassifier, SGDClassifier
-from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import (
-    RandomForestClassifier,
-    GradientBoostingClassifier,
-    AdaBoostClassifier,
-    ExtraTreesClassifier,
-    BaggingClassifier,
-)
-from sklearn.naive_bayes import GaussianNB
-from sklearn.neural_network import MLPClassifier
-from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
+from sklearn.ensemble import (AdaBoostClassifier, BaggingClassifier,
+                              ExtraTreesClassifier, GradientBoostingClassifier,
+                              RandomForestClassifier)
+from sklearn.linear_model import (LogisticRegression, RidgeClassifier,
+                                  SGDClassifier)
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from xgboost import XGBClassifier
 
 pipelines = [
     Pipeline([("scaler", StandardScaler()), ("clf", LogisticRegression())]),

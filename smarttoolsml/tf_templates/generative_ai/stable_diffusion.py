@@ -1,9 +1,10 @@
-import tensorflow as tf
 import time
+
 import keras_cv
-from tensorflow import keras
 import matplotlib.pyplot as plt
 import numpy as np
+import tensorflow as tf
+from tensorflow import keras
 
 
 def plot_images(images, figsize: tuple[int, int] = (20, 20)):

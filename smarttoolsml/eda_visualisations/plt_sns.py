@@ -1,7 +1,7 @@
-import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
 import missingno as msno
+import pandas as pd
+import seaborn as sns
 from pandas.plotting import parallel_coordinates
 
 

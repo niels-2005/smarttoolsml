@@ -1,7 +1,7 @@
-import numpy as np
-from sklearn.model_selection import cross_val_score
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+from sklearn.model_selection import cross_val_score
 
 
 def evaluate_cross_val_scores(model, X, y, cv):
