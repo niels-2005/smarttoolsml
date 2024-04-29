@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.feature_selection import RFECV, SelectKBest, chi2
-from sklearn.preprocessing import MinMaxScaler
 
 
 def get_k_best_features(
@@ -19,7 +18,6 @@ def get_k_best_features(
         _type_: _description_
 
     Example usage:
-        X_norm = MinMaxScaler().fit_transform(X)
         get_k_best_features(k=5, X=X_norm, y=y_train)
 
     """
