@@ -19,6 +19,7 @@ def plot_single_hist(
         plot_single_hist(df_series=df_series, kde=True)
     """
     sns.displot(df_series, kde=kde, height=height, aspect=aspect)
+    plt.title(f"Histogram")
     plt.show()
 
 
@@ -40,4 +41,5 @@ def plot_multi_hist(
     """
     for col in columns:
         sns.displot(data=df, x=col, kde=kde, height=height, aspect=aspect)
+        plt.title(f"Histogram {col}")
     plt.show()

@@ -81,7 +81,7 @@ def plot_scatterplot_5f(
         hue = "Survived"
         size = "Sex"
         style = "Pclass"
-        plot_scatterplot_4f(df=df, x=x, y=y, hue=hue, size=size)
+        plot_scatterplot_5f(df=df, x=x, y=y, hue=hue, size=size, style=style)
     """
     plt.figure(figsize=figsize)
     sns.scatterplot(x=x, y=y, hue=hue, size=size, style=style, data=df)

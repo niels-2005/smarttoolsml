@@ -16,9 +16,10 @@ def plot_single_kde(
 
     Example usage:
         df_series = df["Age"]
-        plot_single_kde(df_series=df_series, kde=True)
+        plot_single_kde(df_series=df_series)
     """
     sns.displot(df_series, kind=kind, height=height, aspect=aspect)
+    plt.title(f"KDE Plot")
     plt.show()
 
 
@@ -40,4 +41,5 @@ def plot_multi_kde(
     """
     for col in columns:
         sns.displot(data=df, x=col, kind=kind, height=height, aspect=aspect)
+        plt.title(f"KDE Plot {col}")
     plt.show()

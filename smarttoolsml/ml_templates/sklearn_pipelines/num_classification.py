@@ -1,9 +1,12 @@
 from lightgbm import LGBMClassifier
-from sklearn.ensemble import (AdaBoostClassifier, BaggingClassifier,
-                              ExtraTreesClassifier, GradientBoostingClassifier,
-                              RandomForestClassifier)
-from sklearn.linear_model import (LogisticRegression, RidgeClassifier,
-                                  SGDClassifier)
+from sklearn.ensemble import (
+    AdaBoostClassifier,
+    BaggingClassifier,
+    ExtraTreesClassifier,
+    GradientBoostingClassifier,
+    RandomForestClassifier,
+)
+from sklearn.linear_model import LogisticRegression, RidgeClassifier, SGDClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier

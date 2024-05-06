@@ -1,14 +1,25 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from lightgbm import LGBMClassifier
-from sklearn.ensemble import (AdaBoostClassifier, BaggingClassifier,
-                              ExtraTreesClassifier, GradientBoostingClassifier,
-                              RandomForestClassifier)
-from sklearn.feature_extraction.text import (CountVectorizer, TfidfTransformer,
-                                             TfidfVectorizer)
-from sklearn.linear_model import (LogisticRegression,
-                                  PassiveAggressiveClassifier, Perceptron,
-                                  RidgeClassifier, SGDClassifier)
+from sklearn.ensemble import (
+    AdaBoostClassifier,
+    BaggingClassifier,
+    ExtraTreesClassifier,
+    GradientBoostingClassifier,
+    RandomForestClassifier,
+)
+from sklearn.feature_extraction.text import (
+    CountVectorizer,
+    TfidfTransformer,
+    TfidfVectorizer,
+)
+from sklearn.linear_model import (
+    LogisticRegression,
+    PassiveAggressiveClassifier,
+    Perceptron,
+    RidgeClassifier,
+    SGDClassifier,
+)
 from sklearn.model_selection import cross_val_score
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.neighbors import KNeighborsClassifier
