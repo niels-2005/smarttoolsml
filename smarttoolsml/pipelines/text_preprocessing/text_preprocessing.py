@@ -1,5 +1,6 @@
-import pandas as pd 
+import pandas as pd
 from helper_cleaning import *
+
 
 def text_preprocessing_pipe(df: pd.DataFrame):
     """_summary_
@@ -19,20 +20,15 @@ def text_preprocessing_pipe(df: pd.DataFrame):
     df = df.sample(frac=1, random_state=42)
 
     print("Getting cleaned Texts.")
-    df['clean_text'] = [
+    df["clean_text"] = [
         remove_mult_spaces(
-            filter_chars(
-                clean_hashtags(
-                    strip_all_entities(
-                        remove_emojis(text)
-                    )
-                )
-            )
-        ) for text in df["text"].values
+            filter_chars(clean_hashtags(strip_all_entities(remove_emojis(text))))
+        )
+        for text in df["text"].values
     ]
 
     print("Getting Word Counts")
-    df['text_len'] = [len(text.split()) for text in df["clean_text"].values]
+    df["text_len"] = [len(text.split()) for text in df["clean_text"].values]
 
     return df
 
@@ -61,7 +57,7 @@ def print_random_texts(df: pd.DataFrame, text_type):
     Args:
         df (pd.DataFrame): _description_
         type (_type_): _description_
-    
+
     Example usage:
         type = "Ham" if text["label"] == 0 else "Spam"
         print_random_texts(df=df, type=type)

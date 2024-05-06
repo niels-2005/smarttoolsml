@@ -126,31 +126,6 @@ def plot_hist_with_df_series(
     plt.show()
 
 
-def plot_boxplot_with_df(
-    df: pd.DataFrame,
-    column: str = "Attack",
-    by: str = "Legendary",
-    title: str = "boxplot",
-    figsize: tuple[int, int] = (10, 10),
-):
-    """
-    Creates a boxplot for the specified column grouped by another column in a DataFrame.
-
-    Args:
-        df (pd.DataFrame): DataFrame containing the data.
-        column (str, optional): The column to create a boxplot for. Defaults to "Attack".
-        by (str, optional): The column to group data by for the boxplots. Defaults to "Legendary".
-        title (str, optional): The title of the plot. Defaults to "Boxplot".
-        figsize (tuple[int, int], optional): The size of the figure (width, height). Defaults to (10, 10).
-
-    Example usage:
-        plot_boxplot_with_df(df=df, column="Attack", by="Legendary")
-    """
-    df.boxplot(column=column, by=by, figsize=figsize)
-    plt.title(title)
-    plt.show()
-
-
 def plot_data_more_df_series(
     df: pd.DataFrame,
     series_list: list = ["Attack", "Defense", "Speed"],

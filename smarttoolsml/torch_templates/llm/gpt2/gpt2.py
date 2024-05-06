@@ -40,5 +40,10 @@ def gpt2(
         model_kwargs={"torch_dtype": torch.bfloat16},
         device_map="auto",
     )
-    texts = generator(prompt, max_length=max_length, num_return_sequences=num_return_sequences, truncation=truncation)
+    texts = generator(
+        prompt,
+        max_length=max_length,
+        num_return_sequences=num_return_sequences,
+        truncation=truncation,
+    )
     return texts

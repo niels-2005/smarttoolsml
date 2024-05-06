@@ -53,3 +53,22 @@ def label_encode_col(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
     le = LabelEncoder()
     df[column_name] = le.fit_transform(df[column_name])
     return df
+
+
+def get_dummies(df: pd.DataFrame, col: str):
+    """_summary_
+
+    Args:
+        df (pd.DataFrame): _description_
+        col (str): _description_
+
+    Returns:
+        _type_: _description_
+
+    Example usage:
+        df = get_dummies(df=df, col="Sex")
+    """
+    dummies = pd.get_dummies(df[col], prefix=col).astype(int)
+    df = df.drop(columns=[col])
+    df_dummies = pd.concat([df, dummies], axis=1)
+    return df_dummies
