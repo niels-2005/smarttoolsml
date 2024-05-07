@@ -1,9 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from lightgbm import LGBMClassifier
 from sklearn.ensemble import (
     AdaBoostClassifier,
-    BaggingClassifier,
     ExtraTreesClassifier,
     GradientBoostingClassifier,
     RandomForestClassifier,
@@ -17,8 +15,7 @@ from sklearn.linear_model import (
     LogisticRegression,
     PassiveAggressiveClassifier,
     Perceptron,
-    RidgeClassifier,
-    SGDClassifier,
+    RidgeClassifier
 )
 from sklearn.model_selection import cross_val_score
 from sklearn.naive_bayes import MultinomialNB
@@ -232,6 +229,5 @@ def predict_sample(text: str, pipeline):
         ada_pipeline = Pipeline([('vect', CountVectorizer()), ('clf', AdaBoostClassifier(algorithm='SAMME'))])
         predict_sample(text, ada_pipeline)
     """
-    sample = [text]
-    predicted_class = pipeline.predict(sample)
-    print(f"Text:\n{sample}\n\nPredicted Label: {predicted_class}")
+    predicted_class = pipeline.predict([text])
+    print(f"Text:\n{text}\n\nPredicted Label: {predicted_class}")
