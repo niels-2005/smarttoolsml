@@ -14,6 +14,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
 from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
+import pandas as pd
+
 
 pipelines = [
     Pipeline([("scaler", StandardScaler()), ("reg", LinearRegression())]),
@@ -46,67 +48,79 @@ pipelines = [
 ]
 
 
+
 def compare_pipelines(
-    X_train: np.ndarray, y_train: np.ndarray, cv, plot_comparison: bool = True
-) -> None:
+    X_train: np.ndarray,
+    y_train: np.ndarray,
+    cv,
+    metric: str = "MSE",
+    plot_comparison: bool = True,
+    return_df: bool = False
+) -> pd.DataFrame:
     """
-    Compares multiple machine learning pipelines on the given training data using cross-validation and optionally plots the comparison for MSE, MAE, and R².
+    Compares multiple machine learning pipelines on the given training data using cross-validation and optionally plots the comparison for a specified metric. Optionally returns a DataFrame containing the results.
 
     Args:
         X_train (np.ndarray): The training input samples.
         y_train (np.ndarray): The target labels for the training input samples.
-        cv (object): Cross-validation splitting strategy.
-        plot_comparison (bool): If True, plot the MSE, MAE, and R² comparison as a horizontal bar chart.
+        cv (object): Cross-validation splitting strategy, such as KFold or StratifiedKFold.
+        metric (str): Scoring metric to evaluate the models. Default is 'MSE'.
+        plot_comparison (bool): If True, plot the metric comparison as a horizontal bar chart.
+        return_df (bool): If True, returns a DataFrame containing the evaluation results.
 
     Returns:
-        None: This function does not return a value but prints out the metrics for each regressor and may display a plot.
+        pd.DataFrame or None: Returns a DataFrame with the pipeline descriptions, metrics, and scores if return_df is True, otherwise returns None.
 
     Example usage:
         from sklearn.model_selection import KFold
         cv = KFold(n_splits=5)
-        compare_pipelines(X_train, y_train, cv=cv, plot_comparison=True)
+        metrics = ["MSE", "MAE", "R2"]
+        for met in metrics:
+            df = compare_pipelines(X_train, y_train, cv=cv, metric=met, plot_comparison=True, return_df=True)
     """
-    metrics = {
+    scorer = {
         "MSE": make_scorer(mean_squared_error, greater_is_better=False),
         "MAE": make_scorer(mean_absolute_error, greater_is_better=False),
-        "R2": make_scorer(r2_score),
-    }
+        "R2": make_scorer(r2_score)
+    }[metric]
 
-    results = {metric: [] for metric in metrics}
-    descriptions = []
+    pipeline_descriptions = []
+    scores = []
 
     for idx, pipeline in enumerate(pipelines):
         step_names = " | ".join([type(step[1]).__name__ for step in pipeline.steps])
-        descriptions.append(step_names)
-
-        for metric, scorer in metrics.items():
-            scores = cross_val_score(pipeline, X_train, y_train, cv=cv, scoring=scorer)
-            results[metric].append(np.mean(scores))
-
-        print(f"Pipeline {idx + 1}: {step_names}")
-        for metric in metrics:
-            print(f"  {metric}: {results[metric][-1]:.4f}")
+        cv_scores = cross_val_score(
+            pipeline, X_train, y_train, cv=cv, scoring=scorer
+        ).mean()
+        pipeline_descriptions.append(step_names)
+        scores.append(cv_scores)
+        print(f"Pipeline {idx + 1}: {step_names}, {metric}: {cv_scores:.4f}")
 
     if plot_comparison:
-        plt.figure(figsize=(15, 10))
-        num_metrics = len(metrics)
-        for i, metric in enumerate(metrics, 1):
-            plt.subplot(1, num_metrics, i)
-            sorted_indices = np.argsort(results[metric])
-            sorted_scores = [results[metric][idx] for idx in sorted_indices]
-            sorted_names = [descriptions[idx] for idx in sorted_indices]
+        zipped_lists = zip(scores, pipeline_descriptions)
+        sorted_pairs = sorted(zipped_lists, reverse=True, key=lambda x: x[0])
+        sorted_scores, sorted_names = zip(*sorted_pairs)
 
-            bars = plt.barh(sorted_names, sorted_scores, color="skyblue")
-            for bar in bars:
-                plt.text(
-                    bar.get_width(),
-                    bar.get_y() + bar.get_height() / 2,
-                    f"{bar.get_width():.4f}",
-                    va="center",
-                )
-
-            plt.xlabel(metric)
-            plt.title(f"{metric} Comparison")
-
-        plt.tight_layout()
+        plt.figure(figsize=(10, 8))
+        bars = plt.barh(sorted_names, sorted_scores, color="skyblue")
+        for bar in bars:
+            plt.text(
+                bar.get_width(),
+                bar.get_y() + bar.get_height() / 2,
+                f"{bar.get_width():.4f}",
+                va="center",
+            )
+        plt.xlabel(f"{metric.capitalize()}")
+        plt.title(f"{metric} Performance Comparison")
+        plt.xlim(min(sorted_scores), max(sorted_scores) if metric != "R2" else 1) 
+        plt.gca().invert_yaxis()
         plt.show()
+
+    if return_df:
+        results_df = pd.DataFrame({
+            "Pipeline": pipeline_descriptions,
+            "Metric": metric,
+            "Score": scores
+        })
+        return results_df
+    return None
