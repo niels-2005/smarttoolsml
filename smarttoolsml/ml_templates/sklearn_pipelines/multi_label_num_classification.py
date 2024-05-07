@@ -76,6 +76,24 @@ pipelines = [
 def get_probabilites(
     pipeline, X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray
 ):
+    """_summary_
+
+    Args:
+        pipeline (_type_): _description_
+        X_train (np.ndarray): _description_
+        y_train (np.ndarray): _description_
+        X_test (np.ndarray): _description_
+
+    Returns:
+        _type_: _description_
+
+    Example usage:
+        pipeline = Pipeline([("scaler", RobustScaler()), ("clf", RandomForestClassifier())])
+        X_train = X_train[:7500]
+        y_train = y_train[:7500]
+        X_test = X_test[:7500]
+        probs = get_probabilites(pipeline=pipeline, X_train, y_train, X_test)
+    """
     pipeline.fit(X_train, y_train)
     probs = pipeline.predict_proba(X_test)
     return probs

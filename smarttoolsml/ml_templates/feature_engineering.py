@@ -23,3 +23,21 @@ def feature_binning(df: pd.DataFrame, col: str, bins: list, labels: list):
     dummies = pd.get_dummies(binning).astype(int)
     df_dummies = pd.concat([df, dummies], axis=1)
     return df_dummies
+
+
+def convert_labels(df: pd.DataFrame, labels_dict: dict):
+    """_summary_
+
+    Args:
+        df (pd.DataFrame): _description_
+        labels_dict (dict): _description_
+
+    Returns:
+        _type_: _description_
+
+    Example usage:
+        labels_dict = {"Ham": 0, "Spam": 1}
+        convert_labels(df=df, labels_dict=labels_dict)
+    """
+    df["label"] = df["label"].map(labels_dict)
+    return df

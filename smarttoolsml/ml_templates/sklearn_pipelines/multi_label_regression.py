@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import ElasticNet, Lasso, Ridge
 from sklearn.metrics import (
@@ -15,7 +16,6 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
 from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
-import pandas as pd
 
 pipelines = [
     Pipeline([("scaler", StandardScaler()), ("reg", MultiOutputRegressor(Ridge()))]),
@@ -53,7 +53,7 @@ def compare_pipelines(
     cv,
     metric: str = "MSE",
     plot_comparison: bool = True,
-    return_df: bool = False
+    return_df: bool = False,
 ) -> pd.DataFrame:
     """
     Compares multiple machine learning pipelines on the given training data using cross-validation,
@@ -78,11 +78,15 @@ def compare_pipelines(
             compare_pipelines(X_train, y_train, cv=cv, metric=met, plot_comparison=True, return_df=True)
     """
     scorer = {
-        "MSE": make_scorer(mean_squared_error, greater_is_better=False, multioutput="uniform_average"),
-        "MAE": make_scorer(mean_absolute_error, greater_is_better=False, multioutput="uniform_average"),
-        "R2": make_scorer(r2_score, multioutput="uniform_average")
+        "MSE": make_scorer(
+            mean_squared_error, greater_is_better=False, multioutput="uniform_average"
+        ),
+        "MAE": make_scorer(
+            mean_absolute_error, greater_is_better=False, multioutput="uniform_average"
+        ),
+        "R2": make_scorer(r2_score, multioutput="uniform_average"),
     }[metric]
-    
+
     pipeline_descriptions = []
     scores = []
 
@@ -110,15 +114,13 @@ def compare_pipelines(
             )
         plt.xlabel(f"{metric.capitalize()}")
         plt.title(f"{metric} Performance Comparison")
-        plt.xlim(min(sorted_scores), max(sorted_scores) if metric != "R2" else 1) 
+        plt.xlim(min(sorted_scores), max(sorted_scores) if metric != "R2" else 1)
         plt.gca().invert_yaxis()
         plt.show()
 
     if return_df:
-        results_df = pd.DataFrame({
-            "Pipeline": pipeline_descriptions,
-            "Metric": metric,
-            "Score": scores
-        })
+        results_df = pd.DataFrame(
+            {"Pipeline": pipeline_descriptions, "Metric": metric, "Score": scores}
+        )
         return results_df
     return None

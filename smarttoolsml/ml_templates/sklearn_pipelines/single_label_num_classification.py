@@ -7,7 +7,7 @@ from sklearn.ensemble import (
     RandomForestClassifier,
 )
 from sklearn.linear_model import LogisticRegression, RidgeClassifier, SGDClassifier
-from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
@@ -47,6 +47,12 @@ pipelines = [
     Pipeline([("scaler", StandardScaler()), ("clf", BaggingClassifier())]),
     Pipeline([("scaler", MinMaxScaler()), ("clf", BaggingClassifier())]),
     Pipeline([("scaler", RobustScaler()), ("clf", BaggingClassifier())]),
+    Pipeline([("scaler", StandardScaler()), ("clf", BernoulliNB())]),
+    Pipeline([("scaler", MinMaxScaler()), ("clf", BernoulliNB())]),
+    Pipeline([("scaler", RobustScaler()), ("clf", BernoulliNB())]),
+    Pipeline([("scaler", StandardScaler()), ("clf", MultinomialNB())]),
+    Pipeline([("scaler", MinMaxScaler()), ("clf", MultinomialNB())]),
+    Pipeline([("scaler", RobustScaler()), ("clf", MultinomialNB())]),
     Pipeline([("scaler", StandardScaler()), ("clf", GaussianNB())]),
     Pipeline([("scaler", MinMaxScaler()), ("clf", GaussianNB())]),
     Pipeline([("scaler", RobustScaler()), ("clf", GaussianNB())]),

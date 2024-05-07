@@ -1,8 +1,27 @@
 import random
 import re
 import string
-
+import nltk
+from nltk.corpus import stopwords
 import demoji
+
+nltk.download("stopwords")
+
+
+def remove_stopwords(text: str) -> str:
+    """
+    Removes stopwords from the input text.
+
+    Args:
+        text (str): The input text from which stopwords need to be removed.
+
+    Returns:
+        str: The text with all stopwords removed.
+    """
+    stop_words = set(stopwords.words("english"))
+    words = text.split()
+    filtered_text = " ".join(word for word in words if word.lower() not in stop_words)
+    return filtered_text
 
 
 def remove_emojis(text: str) -> str:

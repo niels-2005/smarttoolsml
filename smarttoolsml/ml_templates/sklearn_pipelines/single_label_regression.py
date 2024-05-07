@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
+import pandas as pd
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor, AdaBoostRegressor, ExtraTreesRegressor
 from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, Ridge
 from sklearn.metrics import (
     make_scorer,
@@ -14,13 +15,17 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
 from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
-import pandas as pd
-
 
 pipelines = [
     Pipeline([("scaler", StandardScaler()), ("reg", LinearRegression())]),
     Pipeline([("scaler", MinMaxScaler()), ("reg", LinearRegression())]),
     Pipeline([("scaler", RobustScaler()), ("reg", LinearRegression())]),
+    Pipeline([("scaler", StandardScaler()), ("reg", AdaBoostRegressor())]),
+    Pipeline([("scaler", MinMaxScaler()), ("reg", AdaBoostRegressor())]),
+    Pipeline([("scaler", RobustScaler()), ("reg", AdaBoostRegressor())]),
+    Pipeline([("scaler", StandardScaler()), ("reg", ExtraTreesRegressor())]),
+    Pipeline([("scaler", MinMaxScaler()), ("reg", ExtraTreesRegressor())]),
+    Pipeline([("scaler", RobustScaler()), ("reg", ExtraTreesRegressor())]),
     Pipeline([("scaler", StandardScaler()), ("reg", Ridge())]),
     Pipeline([("scaler", MinMaxScaler()), ("reg", Ridge())]),
     Pipeline([("scaler", RobustScaler()), ("reg", Ridge())]),
@@ -48,14 +53,13 @@ pipelines = [
 ]
 
 
-
 def compare_pipelines(
     X_train: np.ndarray,
     y_train: np.ndarray,
     cv,
     metric: str = "MSE",
     plot_comparison: bool = True,
-    return_df: bool = False
+    return_df: bool = False,
 ) -> pd.DataFrame:
     """
     Compares multiple machine learning pipelines on the given training data using cross-validation and optionally plots the comparison for a specified metric. Optionally returns a DataFrame containing the results.
@@ -81,7 +85,7 @@ def compare_pipelines(
     scorer = {
         "MSE": make_scorer(mean_squared_error, greater_is_better=False),
         "MAE": make_scorer(mean_absolute_error, greater_is_better=False),
-        "R2": make_scorer(r2_score)
+        "R2": make_scorer(r2_score),
     }[metric]
 
     pipeline_descriptions = []
@@ -112,15 +116,13 @@ def compare_pipelines(
             )
         plt.xlabel(f"{metric.capitalize()}")
         plt.title(f"{metric} Performance Comparison")
-        plt.xlim(min(sorted_scores), max(sorted_scores) if metric != "R2" else 1) 
+        plt.xlim(min(sorted_scores), max(sorted_scores) if metric != "R2" else 1)
         plt.gca().invert_yaxis()
         plt.show()
 
     if return_df:
-        results_df = pd.DataFrame({
-            "Pipeline": pipeline_descriptions,
-            "Metric": metric,
-            "Score": scores
-        })
+        results_df = pd.DataFrame(
+            {"Pipeline": pipeline_descriptions, "Metric": metric, "Score": scores}
+        )
         return results_df
     return None

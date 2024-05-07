@@ -52,8 +52,9 @@ def random_search_with_pipeline(
     )
     random_search.fit(x_train, y_train)
 
-    print("Accuracy: {}".format(random_search.score(x_test, y_test)))
-    print("Tuned Model Parameters: {}".format(random_search.best_params_))
+    print("Best Score Training Set: {}\n".format(random_search.best_score_))
+    print("Accuracy on Test Set: {}\n".format(random_search.score(x_test, y_test)))
+    print("Tuned Model Parameters: {}\n".format(random_search.best_params_))
 
 
 def grid_search_with_pipeline(
@@ -88,7 +89,14 @@ def grid_search_with_pipeline(
         cv = StratifiedKFold(n_splits=5)
         steps = [("scaler", StandardScaler()), ("SVM", SVC())]
         pipeline = Pipeline(steps)
-        parameters = {"SVM__C": [1, 10, 100], "SVM__gamma": [0.1, 0.01]}
+
+        # "SVM__C" for Classificator, "scaler__param" for Scaler as sample
+        parameters = {
+            "scaler__with_mean": (True, False)
+            "SVM__C": [1, 10, 100], 
+            "SVM__gamma": [0.1, 0.01]
+        }
+
         grid_search_with_pipeline(pipeline, parameters, X, y, test_size=0.3, random_state=42, cv=cv)
     """
     x_train, x_test, y_train, y_test = train_test_split(
@@ -98,5 +106,6 @@ def grid_search_with_pipeline(
     cv = GridSearchCV(pipeline, param_grid=params, cv=cv)
     cv.fit(x_train, y_train)
 
-    print("Accuracy: {}".format(cv.score(x_test, y_test)))
-    print("Tuned Model Parameters: {}".format(cv.best_params_))
+    print("Best Score Training Set: {}\n".format(cv.best_score_))
+    print("Accuracy on Test Set: {}\n".format(cv.score(x_test, y_test)))
+    print("Tuned Model Parameters: {}\n".format(cv.best_params_))
