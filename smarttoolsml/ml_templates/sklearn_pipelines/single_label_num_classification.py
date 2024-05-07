@@ -17,9 +17,6 @@ from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
 
 pipelines = [
-    Pipeline([("scaler", StandardScaler()), ("clf", LogisticRegression())]),
-    Pipeline([("scaler", MinMaxScaler()), ("clf", LogisticRegression())]),
-    Pipeline([("scaler", RobustScaler()), ("clf", LogisticRegression())]),
     Pipeline([("scaler", StandardScaler()), ("clf", SVC())]),
     Pipeline([("scaler", MinMaxScaler()), ("clf", SVC())]),
     Pipeline([("scaler", RobustScaler()), ("clf", SVC())]),

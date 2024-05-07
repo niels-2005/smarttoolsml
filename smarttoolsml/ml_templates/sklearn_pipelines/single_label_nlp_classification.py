@@ -12,7 +12,6 @@ from sklearn.feature_extraction.text import (
     TfidfVectorizer,
 )
 from sklearn.linear_model import (
-    LogisticRegression,
     PassiveAggressiveClassifier,
     Perceptron,
     RidgeClassifier
@@ -21,21 +20,11 @@ from sklearn.model_selection import cross_val_score
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import FunctionTransformer
 from sklearn.svm import SVC, LinearSVC
 from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
 
 pipelines = [
-    Pipeline([("vect", CountVectorizer()), ("clf", LogisticRegression())]),
-    Pipeline([("tfidf", TfidfVectorizer()), ("clf", LogisticRegression())]),
-    Pipeline(
-        [
-            ("vect", CountVectorizer()),
-            ("tfidf", TfidfTransformer()),
-            ("clf", LogisticRegression()),
-        ]
-    ),
     Pipeline([("vect", CountVectorizer()), ("clf", MultinomialNB())]),
     Pipeline([("tfidf", TfidfVectorizer()), ("clf", MultinomialNB())]),
     Pipeline(
