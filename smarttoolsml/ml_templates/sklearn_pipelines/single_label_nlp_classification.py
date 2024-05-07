@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from sklearn.ensemble import (
     AdaBoostClassifier,
     ExtraTreesClassifier,
@@ -14,7 +15,7 @@ from sklearn.feature_extraction.text import (
 from sklearn.linear_model import (
     PassiveAggressiveClassifier,
     Perceptron,
-    RidgeClassifier
+    RidgeClassifier,
 )
 from sklearn.model_selection import cross_val_score
 from sklearn.naive_bayes import MultinomialNB
@@ -146,47 +147,56 @@ pipelines = [
 
 
 def compare_pipelines(
-    X_train: np.ndarray, y_train: np.ndarray, cv, plot_comparison: bool = True
-) -> None:
+    X_train: np.ndarray,
+    y_train: np.ndarray,
+    cv,
+    metric: str = "accuracy",
+    plot_comparison: bool = True,
+    return_df: bool = True,
+) -> pd.DataFrame:
     """
     Compares multiple machine learning pipelines on the given training data using cross-validation and optionally plots the comparison.
+    Optionally returns a DataFrame containing the results.
 
     Args:
         X_train (np.ndarray): The training input samples.
         y_train (np.ndarray): The target labels for the training input samples.
         cv (object): Cross-validation splitting strategy, e.g., an instance of StratifiedKFold.
-        plot_comparison (bool): If True, plot the accuracy comparison as a horizontal bar chart (default is True).
+        metric (str): Scoring metric to evaluate the models.
+        plot_comparison (bool): If True, plot the metric comparison as a horizontal bar chart.
+        return_df (bool): If True, returns a DataFrame containing the evaluation results.
 
     Returns:
-        None: This function does not return a value but prints out the accuracy for each classifier and may display a plot.
+        pd.DataFrame or None: Returns a DataFrame with the pipeline descriptions, metrics, and scores if return_df is True, otherwise returns None.
 
     Example usage:
         cv = StratifiedKFold(n_splits=5)
         X_train = X_train[:5000]
         y_train = y_train[:5000]
-        compare_pipelines(X_train, y_train, cv=cv, plot_comparison=True)
+        metrics = ["accuracy", "f1", "precision", "recall"]
+
+        for metric in metrics:
+            df = compare_pipelines(X_train, y_train, cv=cv, metric=metric, plot_comparison=True, return_df=True)
     """
     pipeline_descriptions = []
-    accuracy_scores = []
+    scores = []
 
     for idx, pipeline in enumerate(pipelines):
         step_names = " | ".join([type(step[1]).__name__ for step in pipeline.steps])
         cv_scores = cross_val_score(
-            pipeline, X_train, y_train, cv=cv, scoring="accuracy"
-        )
-        mean_score = np.mean(cv_scores)
+            pipeline, X_train, y_train, cv=cv, scoring=metric
+        ).mean()
         pipeline_descriptions.append(step_names)
-        accuracy_scores.append(mean_score)
-        print(f"Pipeline {idx + 1}: {step_names}, Accuracy: {mean_score:.4f}")
+        scores.append(cv_scores)
+        print(f"Pipeline {idx + 1}: {step_names}, {metric}: {cv_scores:.4f}")
 
     if plot_comparison:
-        zipped_lists = zip(accuracy_scores, pipeline_descriptions)
+        zipped_lists = zip(scores, pipeline_descriptions)
         sorted_pairs = sorted(zipped_lists, reverse=True, key=lambda x: x[0])
         sorted_scores, sorted_names = zip(*sorted_pairs)
 
         plt.figure(figsize=(10, 8))
         bars = plt.barh(sorted_names, sorted_scores, color="skyblue")
-
         for bar in bars:
             plt.text(
                 bar.get_width(),
@@ -194,12 +204,18 @@ def compare_pipelines(
                 f"{bar.get_width():.4f}",
                 va="center",
             )
-
-        plt.xlabel("Accuracy")
+        plt.xlabel(f"{metric.capitalize()}")
         plt.title("Classifier Performance Comparison")
         plt.xlim(0, 1)
         plt.gca().invert_yaxis()
         plt.show()
+
+    if return_df:
+        results_df = pd.DataFrame(
+            {"Pipeline": pipeline_descriptions, "Metric": metric, "Score": scores}
+        )
+        return results_df
+    return None
 
 
 def predict_sample(text: str, pipeline):
