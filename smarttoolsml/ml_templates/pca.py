@@ -13,7 +13,9 @@ def get_pca_components_performance(X: np.ndarray):
         X (np.ndarray): _description_
     
     Example usage:
-        scaler = StandardScaler()
+        scaler = StandardScaler() # or
+        scaler = RobustScaler() # or
+        scaler = MinMaxScaler()
         X_scaled = scaler.fit_transform(X)
         
         get_pca_components_performance(X=X_scaled)

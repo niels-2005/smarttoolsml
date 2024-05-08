@@ -36,7 +36,8 @@ def convert_labels(df: pd.DataFrame, labels_dict: dict):
         _type_: _description_
 
     Example usage:
-        labels_dict = {"Ham": 0, "Spam": 1}
+        labels_dict = {"Ham": 0, "Spam": 1} # if column are str
+        labels_dict = {0: "Ham", 1: "Spam"} # if column are numeric
         convert_labels(df=df, labels_dict=labels_dict)
     """
     df["label"] = df["label"].map(labels_dict)

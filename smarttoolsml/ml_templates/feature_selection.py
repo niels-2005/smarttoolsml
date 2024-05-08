@@ -55,7 +55,7 @@ def rfecv_feature_selector(
         cv = StratifiedKFold(n_splits=5)
         rfecv = rfecv_feature_selector(model=rfc, X, y, cv=cv, plot_curve=True)
     """
-    rfecv = RFECV(estimator=model, step=step, cv=cv, scoring=scoring)
+    rfecv = RFECV(estimator=model, step=step, cv=cv, scoring=scoring, n_jobs=-1)
     rfecv.fit(X, y)
     print("Optimal number of features :", rfecv.n_features_)
     print("Best features :", X.columns[rfecv.support_])

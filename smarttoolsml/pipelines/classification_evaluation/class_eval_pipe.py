@@ -16,7 +16,7 @@ from sklearn.metrics import (
 from sklearn.metrics import roc_curve, auc
 
 
-def classification_evaluation_pipeline(y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.ndarray, classes: list) -> None:
+def classification_evaluation_pipeline(y_true: np.ndarray, y_pred: np.ndarray, classes: list) -> None:
     """
     Evaluates the classification model by generating a comprehensive report including classification metrics,
     confusion matrix, and ROC curve.
@@ -29,7 +29,6 @@ def classification_evaluation_pipeline(y_true: np.ndarray, y_pred: np.ndarray, y
 
     Example usage:
         y_pred = model.predict(X_test)
-        y_prob = model.predict_proba(X_test)
         classes = ["Class 0", "Class 1"]
         classification_evaluation_pipeline(y_true=y_test, y_pred=y_pred, y_prob=y_prob, classes=classes)
     """
@@ -39,8 +38,6 @@ def classification_evaluation_pipeline(y_true: np.ndarray, y_pred: np.ndarray, y
     result = calculate_model_metrics(y_pred=y_pred, y_true=y_true)
     print("3. Plot Confusion Matrix")
     make_confusion_matrix(y_true=y_true, y_pred=y_pred, classes=classes)
-    print("4. Plot Roc Auc Curve")
-    plot_roc_curve(y_true=y_true, y_prob=y_prob)
 
 
 def calculate_model_metrics(
@@ -183,30 +180,4 @@ def make_confusion_matrix(
     # Save the figure if requested
     if savefig:
         plt.savefig("confusion_matrix.png")
-    plt.show()
-
-
-def plot_roc_curve(y_true, y_prob):
-    """
-    Plots the Receiver Operating Characteristic (ROC) curve for the given true labels and predicted probabilities.
-    
-    Args:
-        y_true (array-like): True binary class labels.
-        y_prob (array-like): Probability estimates of the positive class, or decision function values.
-    
-    This function calculates the False Positive Rate and True Positive Rate at various threshold settings
-    and plots them to show the ROC curve. It also calculates and displays the Area Under the Curve (AUC).
-    """
-    # Calculate the ROC curve and the AUC
-    fpr, tpr, thresholds = roc_curve(y_true, y_prob)
-    roc_auc = auc(fpr, tpr)
-    
-    # Plotting the ROC curve
-    plt.figure(figsize=(8, 6))
-    plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (AUC = {roc_auc:.2f})')
-    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--', label='Random')
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('Receiver Operating Characteristic (ROC) Curve')
-    plt.legend(loc='lower right')
     plt.show()

@@ -49,6 +49,7 @@ def random_search_with_pipeline(
         n_iter=n_iter,
         cv=cv,
         random_state=random_state,
+        n_jobs=-1
     )
     random_search.fit(x_train, y_train)
 
@@ -103,7 +104,7 @@ def grid_search_with_pipeline(
         X, y, test_size=test_size, random_state=random_state
     )
 
-    cv = GridSearchCV(pipeline, param_grid=params, cv=cv)
+    cv = GridSearchCV(pipeline, param_grid=params, cv=cv, n_jobs=-1)
     cv.fit(x_train, y_train)
 
     print("Best Score Training Set: {}\n".format(cv.best_score_))

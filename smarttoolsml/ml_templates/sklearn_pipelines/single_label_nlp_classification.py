@@ -18,7 +18,7 @@ from sklearn.linear_model import (
     RidgeClassifier,
 )
 from sklearn.model_selection import cross_val_score
-from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
+from sklearn.naive_bayes import BernoulliNB, MultinomialNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.svm import SVC, LinearSVC
@@ -28,24 +28,22 @@ from xgboost import XGBClassifier
 pipelines = [
     Pipeline([("vect", CountVectorizer()), ("clf", MultinomialNB())]),
     Pipeline([("tfidf", TfidfVectorizer()), ("clf", MultinomialNB())]),
-    Pipeline([("vect", CountVectorizer()), ("clf", GaussianNB())]),
-    Pipeline([("tfidf", TfidfVectorizer()), ("clf", GaussianNB())]),
     Pipeline([("vect", CountVectorizer()), ("clf", BernoulliNB())]),
     Pipeline([("tfidf", TfidfVectorizer()), ("clf", BernoulliNB())]),
     Pipeline([("vect", CountVectorizer()), ("clf", SVC())]),
     Pipeline([("tfidf", TfidfVectorizer()), ("clf", SVC())]),
-    Pipeline([("vect", CountVectorizer()), ("clf", RandomForestClassifier())]),
-    Pipeline([("tfidf", TfidfVectorizer()), ("clf", RandomForestClassifier())]),
+    Pipeline([("vect", CountVectorizer()), ("clf", RandomForestClassifier(n_jobs=-1))]),
+    Pipeline([("tfidf", TfidfVectorizer()), ("clf", RandomForestClassifier(n_jobs=-1))]),
     Pipeline([("vect", CountVectorizer()), ("clf", GradientBoostingClassifier())]),
     Pipeline([("tfidf", TfidfVectorizer()), ("clf", GradientBoostingClassifier())]),
-    Pipeline([("vect", CountVectorizer()), ("clf", PassiveAggressiveClassifier())]),
-    Pipeline([("tfidf", TfidfVectorizer()), ("clf", PassiveAggressiveClassifier())]),
+    Pipeline([("vect", CountVectorizer()), ("clf", PassiveAggressiveClassifier(n_jobs=-1))]),
+    Pipeline([("tfidf", TfidfVectorizer()), ("clf", PassiveAggressiveClassifier(n_jobs=-1))]),
     Pipeline([("vect", CountVectorizer()), ("clf", DecisionTreeClassifier())]),
     Pipeline([("tfidf", TfidfVectorizer()), ("clf", DecisionTreeClassifier())]),
     Pipeline([("vect", CountVectorizer()), ("clf", RidgeClassifier())]),
     Pipeline([("tfidf", TfidfVectorizer()), ("clf", RidgeClassifier())]),
-    Pipeline([("vect", CountVectorizer()), ("clf", KNeighborsClassifier())]),
-    Pipeline([("tfidf", TfidfVectorizer()), ("clf", KNeighborsClassifier())]),
+    Pipeline([("vect", CountVectorizer()), ("clf", KNeighborsClassifier(n_jobs=-1))]),
+    Pipeline([("tfidf", TfidfVectorizer()), ("clf", KNeighborsClassifier(n_jobs=-1))]),
     Pipeline(
         [("vect", CountVectorizer()), ("clf", AdaBoostClassifier(algorithm="SAMME"))]
     ),
@@ -54,12 +52,12 @@ pipelines = [
     ),
     Pipeline([("vect", CountVectorizer()), ("clf", XGBClassifier())]),
     Pipeline([("tfidf", TfidfVectorizer()), ("clf", XGBClassifier())]),
-    Pipeline([("vect", CountVectorizer()), ("clf", ExtraTreesClassifier())]),
-    Pipeline([("tfidf", TfidfVectorizer()), ("clf", ExtraTreesClassifier())]),
+    Pipeline([("vect", CountVectorizer()), ("clf", ExtraTreesClassifier(n_jobs=-1))]),
+    Pipeline([("tfidf", TfidfVectorizer()), ("clf", ExtraTreesClassifier(n_jobs=-1))]),
     Pipeline([("vect", CountVectorizer()), ("clf", LinearSVC())]),
     Pipeline([("tfidf", TfidfVectorizer()), ("clf", LinearSVC())]),
-    Pipeline([("vect", CountVectorizer()), ("clf", Perceptron())]),
-    Pipeline([("tfidf", TfidfVectorizer()), ("clf", Perceptron())]),
+    Pipeline([("vect", CountVectorizer()), ("clf", Perceptron(n_jobs=-1))]),
+    Pipeline([("tfidf", TfidfVectorizer()), ("clf", Perceptron(n_jobs=-1))]),
 ]
 
 
@@ -86,11 +84,24 @@ def compare_pipelines(
     Returns:
         pd.DataFrame or None: Returns a DataFrame with the pipeline descriptions, metrics, and scores if return_df is True, otherwise returns None.
 
+    Scoring Metric Details:
+        'accuracy': Use when each class prediction is equally important.
+        'f1_micro': Use when you want to weight each instance or prediction equally. Ideal for imbalanced datasets.
+        'f1_macro': Use when you want to treat all classes equally regardless of their frequency. Good for when class distribution is not representative of importance.
+        'f1_weighted': Use when class imbalance might affect the model's performance, and you want to weight the metric towards the more frequent classes.
+        'precision_micro': Similar to 'f1_micro', focus on the total proportion of true positive identifications across all classes.
+        'precision_macro': Similar to 'f1_macro', calculates metrics independently for each class but does not take class imbalance into account.
+        'precision_weighted': Useful for taking the relative frequency of each class into account, thereby weighting the precision of each class by its presence in the dataset.
+        'recall_micro': Focuses on the overall ability of the model to correctly identify all labels across all classes.
+        'recall_macro': Evaluates the model’s ability to detect each class, treating all classes as equally important.
+        'recall_weighted': Adjusts recall for the frequency of each class, providing a metric that reflects the relative importance of classes.
+
     Example usage:
-        cv = StratifiedKFold(n_splits=5)
+        cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
         X_train = X_train[:5000]
         y_train = y_train[:5000]
-        metrics = ["accuracy", "f1", "precision", "recall"]
+
+        metrics = ["accuracy", "f1_weighted", "precision_weighted", "recall_weighted"]
 
         for metric in metrics:
             df = compare_pipelines(X_train, y_train, cv=cv, metric=metric, plot_comparison=True, return_df=True)
