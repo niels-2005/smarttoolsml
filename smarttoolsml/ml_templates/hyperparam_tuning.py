@@ -49,7 +49,7 @@ def random_search_with_pipeline(
         n_iter=n_iter,
         cv=cv,
         random_state=random_state,
-        n_jobs=-1
+        n_jobs=-1,
     )
     random_search.fit(x_train, y_train)
 
@@ -94,7 +94,7 @@ def grid_search_with_pipeline(
         # "SVM__C" for Classificator, "scaler__param" for Scaler as sample
         parameters = {
             "scaler__with_mean": (True, False)
-            "SVM__C": [1, 10, 100], 
+            "SVM__C": [1, 10, 100],
             "SVM__gamma": [0.1, 0.01]
         }
 

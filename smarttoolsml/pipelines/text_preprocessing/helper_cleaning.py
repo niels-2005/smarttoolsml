@@ -1,9 +1,10 @@
 import random
 import re
 import string
+
+import demoji
 import nltk
 from nltk.corpus import stopwords
-import demoji
 
 nltk.download("stopwords")
 

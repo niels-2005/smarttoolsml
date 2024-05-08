@@ -34,7 +34,9 @@ pipelines = [
     Pipeline([("scaler", StandardScaler()), ("clf", DecisionTreeClassifier())]),
     Pipeline([("scaler", MinMaxScaler()), ("clf", DecisionTreeClassifier())]),
     Pipeline([("scaler", RobustScaler()), ("clf", DecisionTreeClassifier())]),
-    Pipeline([("scaler", StandardScaler()), ("clf", RandomForestClassifier(n_jobs=-1))]),
+    Pipeline(
+        [("scaler", StandardScaler()), ("clf", RandomForestClassifier(n_jobs=-1))]
+    ),
     Pipeline([("scaler", MinMaxScaler()), ("clf", RandomForestClassifier(n_jobs=-1))]),
     Pipeline([("scaler", RobustScaler()), ("clf", RandomForestClassifier(n_jobs=-1))]),
     Pipeline([("scaler", StandardScaler()), ("clf", GradientBoostingClassifier())]),
