@@ -32,22 +32,22 @@ pipelines = [
     Pipeline([("tfidf", TfidfVectorizer()), ("clf", BernoulliNB())]),
     Pipeline([("vect", CountVectorizer()), ("clf", SVC())]),
     Pipeline([("tfidf", TfidfVectorizer()), ("clf", SVC())]),
-    Pipeline([("vect", CountVectorizer()), ("clf", RandomForestClassifier(n_jobs=-1))]),
+    Pipeline([("vect", CountVectorizer()), ("clf", RandomForestClassifier(n_jobs=-1, class_weight="balanced"))]),
     Pipeline(
-        [("tfidf", TfidfVectorizer()), ("clf", RandomForestClassifier(n_jobs=-1))]
+        [("tfidf", TfidfVectorizer()), ("clf", RandomForestClassifier(n_jobs=-1, class_weight="balanced"))]
     ),
     Pipeline([("vect", CountVectorizer()), ("clf", GradientBoostingClassifier())]),
     Pipeline([("tfidf", TfidfVectorizer()), ("clf", GradientBoostingClassifier())]),
     Pipeline(
-        [("vect", CountVectorizer()), ("clf", PassiveAggressiveClassifier(n_jobs=-1))]
+        [("vect", CountVectorizer()), ("clf", PassiveAggressiveClassifier(n_jobs=-1, class_weight="balanced"))]
     ),
     Pipeline(
-        [("tfidf", TfidfVectorizer()), ("clf", PassiveAggressiveClassifier(n_jobs=-1))]
+        [("tfidf", TfidfVectorizer()), ("clf", PassiveAggressiveClassifier(n_jobs=-1, class_weight="balanced"))]
     ),
-    Pipeline([("vect", CountVectorizer()), ("clf", DecisionTreeClassifier())]),
-    Pipeline([("tfidf", TfidfVectorizer()), ("clf", DecisionTreeClassifier())]),
-    Pipeline([("vect", CountVectorizer()), ("clf", RidgeClassifier())]),
-    Pipeline([("tfidf", TfidfVectorizer()), ("clf", RidgeClassifier())]),
+    Pipeline([("vect", CountVectorizer()), ("clf", DecisionTreeClassifier(class_weight="balanced"))]),
+    Pipeline([("tfidf", TfidfVectorizer()), ("clf", DecisionTreeClassifier(class_weight="balanced"))]),
+    Pipeline([("vect", CountVectorizer()), ("clf", RidgeClassifier(class_weight="balanced"))]),
+    Pipeline([("tfidf", TfidfVectorizer()), ("clf", RidgeClassifier(class_weight="balanced"))]),
     Pipeline([("vect", CountVectorizer()), ("clf", KNeighborsClassifier(n_jobs=-1))]),
     Pipeline([("tfidf", TfidfVectorizer()), ("clf", KNeighborsClassifier(n_jobs=-1))]),
     Pipeline(
@@ -58,12 +58,12 @@ pipelines = [
     ),
     Pipeline([("vect", CountVectorizer()), ("clf", XGBClassifier())]),
     Pipeline([("tfidf", TfidfVectorizer()), ("clf", XGBClassifier())]),
-    Pipeline([("vect", CountVectorizer()), ("clf", ExtraTreesClassifier(n_jobs=-1))]),
-    Pipeline([("tfidf", TfidfVectorizer()), ("clf", ExtraTreesClassifier(n_jobs=-1))]),
-    Pipeline([("vect", CountVectorizer()), ("clf", LinearSVC())]),
-    Pipeline([("tfidf", TfidfVectorizer()), ("clf", LinearSVC())]),
-    Pipeline([("vect", CountVectorizer()), ("clf", Perceptron(n_jobs=-1))]),
-    Pipeline([("tfidf", TfidfVectorizer()), ("clf", Perceptron(n_jobs=-1))]),
+    Pipeline([("vect", CountVectorizer()), ("clf", ExtraTreesClassifier(n_jobs=-1, class_weight="balanced"))]),
+    Pipeline([("tfidf", TfidfVectorizer()), ("clf", ExtraTreesClassifier(n_jobs=-1, class_weight="balanced"))]),
+    Pipeline([("vect", CountVectorizer()), ("clf", LinearSVC(class_weight="balanced"))]),
+    Pipeline([("tfidf", TfidfVectorizer()), ("clf", LinearSVC(class_weight="balanced"))]),
+    Pipeline([("vect", CountVectorizer()), ("clf", Perceptron(n_jobs=-1, class_weight="balanced"))]),
+    Pipeline([("tfidf", TfidfVectorizer()), ("clf", Perceptron(n_jobs=-1, class_weight="balanced"))]),
 ]
 
 

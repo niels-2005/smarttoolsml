@@ -31,20 +31,20 @@ pipelines = [
             ("clf", MultiOutputClassifier(KNeighborsClassifier(n_jobs=-1))),
         ]
     ),
-    Pipeline([("scaler", StandardScaler()), ("clf", DecisionTreeClassifier())]),
-    Pipeline([("scaler", MinMaxScaler()), ("clf", DecisionTreeClassifier())]),
-    Pipeline([("scaler", RobustScaler()), ("clf", DecisionTreeClassifier())]),
+    Pipeline([("scaler", StandardScaler()), ("clf", DecisionTreeClassifier(class_weight="balanced"))]),
+    Pipeline([("scaler", MinMaxScaler()), ("clf", DecisionTreeClassifier(class_weight="balanced"))]),
+    Pipeline([("scaler", RobustScaler()), ("clf", DecisionTreeClassifier(class_weight="balanced"))]),
     Pipeline(
-        [("scaler", StandardScaler()), ("clf", RandomForestClassifier(n_jobs=-1))]
+        [("scaler", StandardScaler()), ("clf", RandomForestClassifier(n_jobs=-1, class_weight="balanced"))]
     ),
-    Pipeline([("scaler", MinMaxScaler()), ("clf", RandomForestClassifier(n_jobs=-1))]),
-    Pipeline([("scaler", RobustScaler()), ("clf", RandomForestClassifier(n_jobs=-1))]),
+    Pipeline([("scaler", MinMaxScaler()), ("clf", RandomForestClassifier(n_jobs=-1, class_weight="balanced"))]),
+    Pipeline([("scaler", RobustScaler()), ("clf", RandomForestClassifier(n_jobs=-1, class_weight="balanced"))]),
     Pipeline([("scaler", StandardScaler()), ("clf", GradientBoostingClassifier())]),
     Pipeline([("scaler", MinMaxScaler()), ("clf", GradientBoostingClassifier())]),
     Pipeline([("scaler", RobustScaler()), ("clf", GradientBoostingClassifier())]),
-    Pipeline([("scaler", StandardScaler()), ("clf", ExtraTreesClassifier(n_jobs=-1))]),
-    Pipeline([("scaler", MinMaxScaler()), ("clf", ExtraTreesClassifier(n_jobs=-1))]),
-    Pipeline([("scaler", RobustScaler()), ("clf", ExtraTreesClassifier(n_jobs=-1))]),
+    Pipeline([("scaler", StandardScaler()), ("clf", ExtraTreesClassifier(n_jobs=-1, class_weight="balanced"))]),
+    Pipeline([("scaler", MinMaxScaler()), ("clf", ExtraTreesClassifier(n_jobs=-1, class_weight="balanced"))]),
+    Pipeline([("scaler", RobustScaler()), ("clf", ExtraTreesClassifier(n_jobs=-1, class_weight="balanced"))]),
     Pipeline(
         [
             ("scaler", StandardScaler()),
