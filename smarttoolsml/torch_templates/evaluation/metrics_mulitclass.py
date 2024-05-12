@@ -41,23 +41,49 @@ def get_y_pred_multilabel(model, test_loader):
     return y_pred_tensor
 
 
+def get_y_true(dataset):
+    """_summary_
+
+    Args:
+        dataset (_type_): _description_
+
+    Returns:
+        _type_: _description_
+
+    Example usage:
+        test_dataset = ImageDataset()
+        get_y_true(dataset=test_dataset)
+    """
+    y_true = [label for _, label in dataset]
+    y_true_tensor = torch.tensor(y_true)
+    return y_true_tensor
+
+
 def plot_confusion_matrix(
-    class_names: list, y_true: torch.Tensor, y_pred: torch.Tensor
+    class_names: list,
+    model,
+    dataloader,
+    dataset
 ):
     """_summary_
 
     Args:
         class_names (list): _description_
-        data (_type_): _description_
-        y_pred (torch.Tensor): _description_
-
+        model (_type_): _description_
+        dataloader (_type_): _description_
+        dataset (_type_): _description_
+    
     Example usage:
-        class_names = Dataset.classes
-        y_pred = get_y_pred_multilabel()
-        y_true = ...
-        plot_confusion_matrix(class_names=class_names, y_pred=y_pred, y_true=y_true)
+        classes = Dataset.classes
+        model = model()
+        dataloader = get_dataloader()
+        dataset = ImageDataset()
 
+        plot_confusion_matrix(class_names=classes, model=model, dataloader=dataloader, dataset=dataset)
     """
+    y_pred = get_y_pred_multilabel(model=model, test_loader=dataloader)
+    y_true = get_y_true(dataset=dataset)
+
     confmat = ConfusionMatrix(num_classes=len(class_names), task="multiclass")
     confmat_tensor = confmat(preds=y_pred, target=y_true)
 
