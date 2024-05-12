@@ -1,7 +1,8 @@
-import matplotlib.pyplot as plt 
-import pandas as pd 
-import numpy as np 
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import seaborn as sns
+
 
 def custom_xlabels_ax(data: pd.DataFrame):
     """How to make custom xticks on plots with ax plots
@@ -13,7 +14,7 @@ def custom_xlabels_ax(data: pd.DataFrame):
     ax = sns.countplot(data=data, x="sex", hue="target_names")
     plt.title("Sex Balance")
     ax.set_xticks([0, 1])  #
-    ax.set_xticklabels(['female', 'male'])  
+    ax.set_xticklabels(["female", "male"])
 
     plt.show()
 

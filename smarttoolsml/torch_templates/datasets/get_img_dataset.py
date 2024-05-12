@@ -1,8 +1,8 @@
-import torch 
-from torch import nn 
-import timm 
+import timm
+import torch
+from torch import nn
+from torch.utils.data import DataLoader, Dataset
 from torchvision.datasets import ImageFolder
-from torch.utils.data import Dataset, DataLoader
 
 
 class ImageDataset(Dataset):
@@ -14,21 +14,22 @@ class ImageDataset(Dataset):
     Example usage:
         dataset = PlayingCardDataset(data_dir=CFG.train_folder)
     """
+
     def __init__(self, data_dir, transform=None):
         self.data = ImageFolder(data_dir, transform=transform)
-    
+
     def __len__(self):
         return len(self.data)
-    
+
     def __getitem__(self, idx):
         return self.data[idx]
-    
+
     @property
     def classes(self):
         return self.data.classes
 
 
-def get_dataloader(folder: str, batch_size: int, shuffle: bool = True, transform = None):
+def get_dataloader(folder: str, batch_size: int, shuffle: bool = True, transform=None):
     """_summary_
 
     Args:
@@ -48,7 +49,7 @@ def get_dataloader(folder: str, batch_size: int, shuffle: bool = True, transform
             transforms.ToTensor(),
         ])
 
-        batch_size = 32 
+        batch_size = 32
 
         get_dataloader(folder=folder, transform=transform, batch_size=batch_size, shuffle=True)
     """

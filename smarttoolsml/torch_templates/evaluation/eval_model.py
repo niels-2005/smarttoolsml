@@ -1,6 +1,7 @@
-import torch 
+import torch
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
+
 
 def accuracy_fn(y_true, y_pred):
     """Calculates accuracy between truth labels and predictions.
@@ -17,10 +18,12 @@ def accuracy_fn(y_true, y_pred):
     return acc
 
 
-def eval_model(model: torch.nn.Module, 
-               data_loader: torch.utils.data.DataLoader, 
-               loss_fn: torch.nn.Module,
-               device: torch.device = device):
+def eval_model(
+    model: torch.nn.Module,
+    data_loader: torch.utils.data.DataLoader,
+    loss_fn: torch.nn.Module,
+    device: torch.device = device,
+):
     """Evaluates a given model on a given dataset.
 
     Args:
@@ -49,10 +52,12 @@ def eval_model(model: torch.nn.Module,
             y_pred = model(X)
             loss += loss_fn(y_pred, y)
             acc += accuracy_fn(y_true=y, y_pred=y_pred.argmax(dim=1))
-        
+
         # Scale loss and acc
         loss /= len(data_loader)
         acc /= len(data_loader)
-    return {"model_name": model.__class__.__name__, # only works when model was created with a class
-            "model_loss": loss.item(),
-            "model_acc": acc}
+    return {
+        "model_name": model.__class__.__name__,  # only works when model was created with a class
+        "model_loss": loss.item(),
+        "model_acc": acc,
+    }

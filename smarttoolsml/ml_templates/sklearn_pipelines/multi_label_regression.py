@@ -18,20 +18,57 @@ from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
 
 pipelines = [
-    Pipeline([("scaler", StandardScaler()), ("reg", MultiOutputRegressor(Ridge(), n_jobs=-1))]),
-    Pipeline([("scaler", MinMaxScaler()), ("reg", MultiOutputRegressor(Ridge(), n_jobs=-1))]),
-    Pipeline([("scaler", RobustScaler()), ("reg", MultiOutputRegressor(Ridge(), n_jobs=-1))]),
-    Pipeline([("scaler", StandardScaler()), ("reg", MultiOutputRegressor(Lasso(), n_jobs=-1))]),
-    Pipeline([("scaler", MinMaxScaler()), ("reg", MultiOutputRegressor(Lasso(), n_jobs=-1))]),
-    Pipeline([("scaler", RobustScaler()), ("reg", MultiOutputRegressor(Lasso(), n_jobs=-1))]),
     Pipeline(
-        [("scaler", StandardScaler()), ("reg", MultiOutputRegressor(ElasticNet(), n_jobs=-1))]
+        [
+            ("scaler", StandardScaler()),
+            ("reg", MultiOutputRegressor(Ridge(), n_jobs=-1)),
+        ]
     ),
-    Pipeline([("scaler", MinMaxScaler()), ("reg", MultiOutputRegressor(ElasticNet(), n_jobs=-1))]),
-    Pipeline([("scaler", RobustScaler()), ("reg", MultiOutputRegressor(ElasticNet(), n_jobs=-1))]),
-    Pipeline([("scaler", StandardScaler()), ("reg", MultiOutputRegressor(SVR(), n_jobs=-1))]),
-    Pipeline([("scaler", MinMaxScaler()), ("reg", MultiOutputRegressor(SVR(), n_jobs=-1))]),
-    Pipeline([("scaler", RobustScaler()), ("reg", MultiOutputRegressor(SVR(), n_jobs=-1))]),
+    Pipeline(
+        [("scaler", MinMaxScaler()), ("reg", MultiOutputRegressor(Ridge(), n_jobs=-1))]
+    ),
+    Pipeline(
+        [("scaler", RobustScaler()), ("reg", MultiOutputRegressor(Ridge(), n_jobs=-1))]
+    ),
+    Pipeline(
+        [
+            ("scaler", StandardScaler()),
+            ("reg", MultiOutputRegressor(Lasso(), n_jobs=-1)),
+        ]
+    ),
+    Pipeline(
+        [("scaler", MinMaxScaler()), ("reg", MultiOutputRegressor(Lasso(), n_jobs=-1))]
+    ),
+    Pipeline(
+        [("scaler", RobustScaler()), ("reg", MultiOutputRegressor(Lasso(), n_jobs=-1))]
+    ),
+    Pipeline(
+        [
+            ("scaler", StandardScaler()),
+            ("reg", MultiOutputRegressor(ElasticNet(), n_jobs=-1)),
+        ]
+    ),
+    Pipeline(
+        [
+            ("scaler", MinMaxScaler()),
+            ("reg", MultiOutputRegressor(ElasticNet(), n_jobs=-1)),
+        ]
+    ),
+    Pipeline(
+        [
+            ("scaler", RobustScaler()),
+            ("reg", MultiOutputRegressor(ElasticNet(), n_jobs=-1)),
+        ]
+    ),
+    Pipeline(
+        [("scaler", StandardScaler()), ("reg", MultiOutputRegressor(SVR(), n_jobs=-1))]
+    ),
+    Pipeline(
+        [("scaler", MinMaxScaler()), ("reg", MultiOutputRegressor(SVR(), n_jobs=-1))]
+    ),
+    Pipeline(
+        [("scaler", RobustScaler()), ("reg", MultiOutputRegressor(SVR(), n_jobs=-1))]
+    ),
     Pipeline([("scaler", StandardScaler()), ("reg", RandomForestRegressor(n_jobs=-1))]),
     Pipeline([("scaler", MinMaxScaler()), ("reg", RandomForestRegressor(n_jobs=-1))]),
     Pipeline([("scaler", RobustScaler()), ("reg", RandomForestRegressor(n_jobs=-1))]),
