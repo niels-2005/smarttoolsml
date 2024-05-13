@@ -1,5 +1,6 @@
-import torch.optim as optim 
-from torch.optim.lr_scheduler import ReduceLROnPlateau 
+import torch.optim as optim
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+
 
 def reduce_lr_on_plateau(model):
     opt = optim.Adam(model.parameters(), lr=1e-4)

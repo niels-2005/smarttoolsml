@@ -3,19 +3,15 @@ import torch
 
 def accuracy_fn(y_true, y_logits):
     """Calculates accuracy for binary classification."""
-    y_pred = torch.sigmoid(y_logits) >= 0.5  # Umwandeln von Logits zu binären Klassenlabels
+    y_pred = (
+        torch.sigmoid(y_logits) >= 0.5
+    )  # Umwandeln von Logits zu binären Klassenlabels
     correct = torch.eq(y_true, y_pred).sum().item()
     acc = (correct / len(y_pred)) * 100
     return acc
 
 
-def train_step(
-    model,
-    dataloader,
-    loss_fn,
-    optimizer,
-    device
-):
+def train_step(model, dataloader, loss_fn, optimizer, device):
     """_summary_
 
     Args:
@@ -59,12 +55,8 @@ def train_step(
     train_acc /= len(dataloader)
     return train_loss, train_acc
 
-def val_step(
-    dataloader,
-    model,
-    loss_fn,
-    device
-):
+
+def val_step(dataloader, model, loss_fn, device):
     """_summary_
 
     Args:
@@ -90,7 +82,9 @@ def val_step(
         for X, y in dataloader:
             X, y = X.to(device), y.to(device)
             y_logits = model(X)
-            val_loss += loss_fn(y_logits, y.float()).item()  # y.float() für BCEWithLogitsLoss
+            val_loss += loss_fn(
+                y_logits, y.float()
+            ).item()  # y.float() für BCEWithLogitsLoss
             val_acc += accuracy_fn(y, y_logits)
 
     val_loss /= len(dataloader)

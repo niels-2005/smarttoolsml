@@ -59,12 +59,7 @@ def get_y_true(dataset):
     return y_true_tensor
 
 
-def plot_confusion_matrix(
-    class_names: list,
-    model,
-    dataloader,
-    dataset
-):
+def plot_confusion_matrix(class_names: list, model, dataloader, dataset):
     """_summary_
 
     Args:
@@ -72,7 +67,7 @@ def plot_confusion_matrix(
         model (_type_): _description_
         dataloader (_type_): _description_
         dataset (_type_): _description_
-    
+
     Example usage:
         classes = Dataset.classes
         model = model()

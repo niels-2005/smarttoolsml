@@ -1,5 +1,6 @@
-import torch 
-from torch import nn 
+import torch
+from torch import nn
+
 
 def binary_classification():
     loss = nn.BCEWithLogitsLoss()

@@ -1,5 +1,5 @@
 import timm
-import torch 
+import torch
 from torch import nn
 
 
@@ -32,22 +32,23 @@ class EfficientNetClassifier(nn.Module):
         model_b7 = EfficientNetClassifier(version='b7', num_classes=53, dropout_rate=0.5)
 
     """
-    def __init__(self, version='b0', num_classes=53, dropout_rate=0.5):
+
+    def __init__(self, version="b0", num_classes=53, dropout_rate=0.5):
         super(EfficientNetClassifier, self).__init__()
-        model_name = f'efficientnet_{version}'
+        model_name = f"efficientnet_{version}"
         self.base_model = timm.create_model(model_name, pretrained=True)
         self.features = nn.Sequential(*list(self.base_model.children())[:-1])
 
         # Output-Größen entsprechend der spezifischen EfficientNet-Version
         feature_sizes = {
-            'b0': 1280,
-            'b1': 1280,
-            'b2': 1408,
-            'b3': 1536,
-            'b4': 1792,
-            'b5': 2048,
-            'b6': 2304,
-            'b7': 2560
+            "b0": 1280,
+            "b1": 1280,
+            "b2": 1408,
+            "b3": 1536,
+            "b4": 1792,
+            "b5": 2048,
+            "b6": 2304,
+            "b7": 2560,
         }
 
         enet_out_size = feature_sizes[version]
@@ -55,15 +56,15 @@ class EfficientNetClassifier(nn.Module):
             nn.Flatten(),
             nn.Linear(enet_out_size, 512),
             nn.ReLU(),
-            nn.Dropout(dropout_rate),       
-            nn.Linear(512, num_classes)
+            nn.Dropout(dropout_rate),
+            nn.Linear(512, num_classes),
         )
 
     def forward(self, x):
         x = self.features(x)
         output = self.classifier(x)
         return output
-    
+
 
 # basic
 class SimpleCardClassifer(nn.Module):
@@ -90,14 +91,14 @@ class SimpleCardClassifierV2(nn.Module):
         super(SimpleCardClassifierV2, self).__init__()
         self.base_model = timm.create_model("efficientnet_b0", pretrained=True)
         self.features = nn.Sequential(*list(self.base_model.children())[:-1])
-        
+
         enet_out_size = 1280
         # Erweiterte Klassifizierer-Architektur
         self.classifier = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(enet_out_size, 512),  
-            nn.ReLU(),                    
-            nn.Linear(512, num_classes)  
+            nn.Linear(enet_out_size, 512),
+            nn.ReLU(),
+            nn.Linear(512, num_classes),
         )
 
     def forward(self, x):
@@ -118,8 +119,8 @@ class SimpleCardClassifierV3(nn.Module):
             nn.Flatten(),
             nn.Linear(enet_out_size, 512),
             nn.ReLU(),
-            nn.Dropout(dropout_rate),       
-            nn.Linear(512, num_classes)
+            nn.Dropout(dropout_rate),
+            nn.Linear(512, num_classes),
         )
 
     def forward(self, x):
