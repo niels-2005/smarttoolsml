@@ -8,17 +8,17 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 def get_y_pred_multilabel(model, test_loader):
-    """_summary_
+    """Generates predictions for a multilabel classification model on a given test dataset.
 
     Args:
-        model (_type_): _description_
-        test_loader (_type_): _description_
+        model (torch.nn.Module): A PyTorch model for multilabel classification.
+        test_loader (torch.utils.data.DataLoader): DataLoader containing the test dataset.
 
     Returns:
-        _type_: _description_
+        torch.Tensor: A tensor containing the predicted labels for the test dataset.
 
     Example usage:
-        model = model()
+        model = YourMultilabelModel()
         test_loader = get_dataloader()
         y_pred = get_y_pred_multilabel(model=model, test_loader=test_loader)
     """
@@ -33,7 +33,7 @@ def get_y_pred_multilabel(model, test_loader):
             # Turn predictions from logits -> prediction probabilities -> predictions labels
             y_pred = torch.softmax(y_logit, dim=1).argmax(
                 dim=1
-            )  # note: perform softmax on the "logits" dimension, not "batch" dimension (in this case we have a batch size of 32, so can perform on dim=1)
+            )  # Note: perform softmax on the "logits" dimension, not "batch" dimension
             # Put predictions on CPU for evaluation
             y_preds.append(y_pred.cpu())
     # Concatenate list of predictions into a tensor
@@ -42,17 +42,17 @@ def get_y_pred_multilabel(model, test_loader):
 
 
 def get_y_true(dataset):
-    """_summary_
+    """Extracts true labels from a dataset.
 
     Args:
-        dataset (_type_): _description_
+        dataset (torch.utils.data.Dataset): The dataset containing the true labels.
 
     Returns:
-        _type_: _description_
+        torch.Tensor: A tensor containing the true labels.
 
     Example usage:
         test_dataset = ImageDataset()
-        get_y_true(dataset=test_dataset)
+        y_true = get_y_true(dataset=test_dataset)
     """
     y_true = [label for _, label in dataset]
     y_true_tensor = torch.tensor(y_true)
@@ -60,17 +60,17 @@ def get_y_true(dataset):
 
 
 def plot_confusion_matrix(class_names: list, model, dataloader, dataset):
-    """_summary_
+    """Plots a confusion matrix for a given model and dataset.
 
     Args:
-        class_names (list): _description_
-        model (_type_): _description_
-        dataloader (_type_): _description_
-        dataset (_type_): _description_
+        class_names (list): List of class names for the classification task.
+        model (torch.nn.Module): A PyTorch model to generate predictions.
+        dataloader (torch.utils.data.DataLoader): DataLoader containing the test dataset.
+        dataset (torch.utils.data.Dataset): The test dataset containing the true labels.
 
     Example usage:
         classes = Dataset.classes
-        model = model()
+        model = YourMultilabelModel()
         dataloader = get_dataloader()
         dataset = ImageDataset()
 
@@ -82,9 +82,10 @@ def plot_confusion_matrix(class_names: list, model, dataloader, dataset):
     confmat = ConfusionMatrix(num_classes=len(class_names), task="multiclass")
     confmat_tensor = confmat(preds=y_pred, target=y_true)
 
-    # 3. Plot the confusion matrix
+    # Plot the confusion matrix
     fig, ax = plot_confusion_matrix(
         conf_mat=confmat_tensor.numpy(),  # matplotlib likes working with NumPy
-        class_names=class_names,  # turn the row and column labels into class names
+        class_names=class_names,  # Turn the row and column labels into class names
         figsize=(10, 7),
     )
+    return fig, ax

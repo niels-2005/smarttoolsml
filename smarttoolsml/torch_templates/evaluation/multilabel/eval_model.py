@@ -57,7 +57,6 @@ def eval_model(
         loss /= len(data_loader)
         acc /= len(data_loader)
     return {
-        "model_name": model.__class__.__name__,  # only works when model was created with a class
         "model_loss": loss.item(),
         "model_acc": acc,
     }

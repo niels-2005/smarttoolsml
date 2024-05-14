@@ -22,23 +22,23 @@ def plot_images_from_dataloader(
     """
     n_cols = images_per_row
     n_rows = (n_images + n_cols - 1) // n_cols
-    fig, ax = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=(figsize_width, n_rows * 5))
-    ax = ax.flatten()  # Flatten the axis array for easy indexing
+    fig, ax = plt.subplots(
+        nrows=n_rows, ncols=n_cols, figsize=(figsize_width, n_rows * 5)
+    )
+    ax = ax.flatten()
 
-    # Iterate through the first batch from the dataloader
     for images, labels in dataloader:
-        images = images.numpy()  # Convert images to numpy arrays
-        labels = labels.numpy()  # Convert labels to numpy
-        
-        for i in range(min(n_images, len(images))):  # Ensure you do not go out of index
-            ax[i].imshow(images[i].transpose((1, 2, 0)))  # Adjust image dims
-            ax[i].axis('off')
-            ax[i].set_title(f"{class_names[labels[i]]}, {images[i].shape}", fontsize=fontsize)
+        images = images.numpy()
+        labels = labels.numpy()
+        for i in range(min(n_images, len(images))):
+            ax[i].imshow(images[i].transpose((1, 2, 0)))
+            ax[i].axis("off")
+            ax[i].set_title(
+                f"{class_names[labels[i]]}, {images[i].shape}", fontsize=fontsize
+            )
+        break
 
-        break  # Only process the first batch
-
-    # Hide any unused subplots
     for j in range(i + 1, n_rows * n_cols):
-        ax[j].axis('off')
-
+        ax[j].axis("off")
+    fig.suptitle(f"Images from DataLoader")
     plt.show()

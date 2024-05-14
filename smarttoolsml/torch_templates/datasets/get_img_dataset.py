@@ -7,17 +7,26 @@ from torchvision import transforms
 
 
 class ImageDataset(Dataset):
-    """_summary_
+    """Custom Dataset for loading images from a directory.
 
     Args:
-        Dataset (_type_): _description_
+        data_dir (str): Path to the directory containing the images.
+        transform (callable, optional): Optional transform to be applied on a sample.
 
-    Example usage:
-        dataset = PlayingCardDataset(data_dir=CFG.train_folder)
+    Attributes:
+        data (ImageFolder): Instance of ImageFolder with the provided directory and transform.
+        filepaths (list): List of file paths for each image in the dataset.
+
+    Methods:
+        __len__(): Returns the total number of samples.
+        __getitem__(idx): Returns the sample at the given index.
+        classes: Property to get the class names.
+        get_filepaths(): Returns the list of file paths for each image.
     """
 
     def __init__(self, data_dir, transform=None):
         self.data = ImageFolder(data_dir, transform=transform)
+        self.filepaths = [s[0] for s in self.data.samples]
 
     def __len__(self):
         return len(self.data)
@@ -29,34 +38,78 @@ class ImageDataset(Dataset):
     def classes(self):
         return self.data.classes
 
+    def get_filepaths(self):
+        return self.filepaths
 
-def get_dataloader(folder: str, batch_size: int, shuffle: bool = True, transform=None):
-    """_summary_
+
+def get_datasets(train_folder, val_folder, test_folder):
+    """Creates datasets for training, validation, and testing.
 
     Args:
-        folder (str): _description_
-        batch_size (int): _description_
-        shuffle (bool, optional): _description_. Defaults to True.
-        transform (_type_, optional): _description_. Defaults to None.
+        train_folder (str): Path to the training data directory.
+        val_folder (str): Path to the validation data directory.
+        test_folder (str): Path to the testing data directory.
 
     Returns:
-        _type_: _description_
+        tuple: A tuple containing the training, validation, and testing datasets.
 
     Example usage:
-        folder = "./train"
-
-        transform = transforms.Compose([
-            transforms.Resize((128, 128)),
-            transforms.ToTensor(),
-        ])
-
-        batch_size = 32
-
-        get_dataloader(folder=folder, transform=transform, batch_size=batch_size, shuffle=True)
+        train_dataset, val_dataset, test_dataset = get_datasets(
+            train_folder="path/to/train",
+            val_folder="path/to/val",
+            test_folder="path/to/test"
+        )
     """
-    dataset = ImageDataset(folder, transform)
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
-    return dataloader
+    # Train Augmentations if needed
+    train_transform = transforms.Compose(
+        [
+            transforms.Resize((224, 224)),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomRotation(15),
+            transforms.ColorJitter(
+                brightness=0.1, contrast=0.1, saturation=0.1, hue=0.1
+            ),
+            transforms.ToTensor(),
+        ]
+    )
+
+    test_transform = transforms.Compose(
+        [
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+        ]
+    )
+
+    # Datasets
+    train_dataset = ImageDataset(data_dir=train_folder, transform=train_transform)
+    val_dataset = ImageDataset(data_dir=val_folder, transform=test_transform)
+    test_dataset = ImageDataset(data_dir=test_folder, transform=test_transform)
+
+    return train_dataset, val_dataset, test_dataset
+
+
+def get_dataloader(train_dataset, val_dataset, test_dataset, batch_size):
+    """Creates dataloaders for training, validation, and testing datasets.
+
+    Args:
+        train_dataset (Dataset): Training dataset.
+        val_dataset (Dataset): Validation dataset.
+        test_dataset (Dataset): Testing dataset.
+        batch_size (int): Number of samples per batch to load.
+
+    Returns:
+        tuple: A tuple containing the training, validation, and testing dataloaders.
+
+    Example usage:
+        train_dataloader, val_dataloader, test_dataloader = get_dataloader(
+            train_dataset, val_dataset, test_dataset, batch_size=32
+        )
+    """
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+    return train_dataloader, val_dataloader, test_dataloader
 
 
 def get_target_to_class(train_folder: str):

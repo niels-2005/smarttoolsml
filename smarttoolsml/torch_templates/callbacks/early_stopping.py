@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 
+# EarlyStopping Callback for PyTorch
 
 class EarlyStopping:
     """Early stops the training if validation loss doesn't improve after a given patience."""
@@ -58,3 +59,7 @@ class EarlyStopping:
             )
         torch.save(model.state_dict(), self.path)
         self.val_loss_min = val_loss
+
+    def load_best_weights(self, model):
+        """Loads the best weights from the checkpoint."""
+        model.load_state_dict(torch.load(self.path))
