@@ -4,6 +4,7 @@ from torch import nn
 from torch.utils.data import DataLoader, Dataset
 from torchvision.datasets import ImageFolder
 from torchvision import transforms
+from sklearn.model_selection import train_test_split
 
 
 class ImageDataset(Dataset):
@@ -12,34 +13,57 @@ class ImageDataset(Dataset):
     Args:
         data_dir (str): Path to the directory containing the images.
         transform (callable, optional): Optional transform to be applied on a sample.
+        subset (str, optional): Subset to use ('train', 'val', or 'all'). Defaults to 'all'.
+        val_split (float, optional): Fraction of the data to use for validation. Defaults to 0.2.
+        seed (int, optional): Random seed for reproducibility. Defaults to 42.
 
     Attributes:
         data (ImageFolder): Instance of ImageFolder with the provided directory and transform.
         filepaths (list): List of file paths for each image in the dataset.
-
-    Methods:
-        __len__(): Returns the total number of samples.
-        __getitem__(idx): Returns the sample at the given index.
-        classes: Property to get the class names.
-        get_filepaths(): Returns the list of file paths for each image.
+        labels (list): List of labels for each image in the dataset.
+        indices (list): List of indices for each image in the dataset.
+        train_indices (list): List of indices for the training subset.
+        val_indices (list): List of indices for the validation subset.
     """
 
-    def __init__(self, data_dir, transform=None):
+    def __init__(self, data_dir, transform=None, subset='all', val_split=0.2, seed=42):
         self.data = ImageFolder(data_dir, transform=transform)
         self.filepaths = [s[0] for s in self.data.samples]
+        self.labels = [s[1] for s in self.data.samples]
+        self.indices = list(range(len(self.data)))
+        self.train_indices, self.val_indices = train_test_split(
+            self.indices, test_size=val_split, random_state=seed, stratify=self.labels)
+
+        if subset == 'train':
+            self.indices = self.train_indices
+        elif subset == 'val':
+            self.indices = self.val_indices
 
     def __len__(self):
-        return len(self.data)
+        return len(self.indices)
 
     def __getitem__(self, idx):
-        return self.data[idx]
+        index = self.indices[idx]
+        return self.data[index]
 
     @property
     def classes(self):
         return self.data.classes
 
     def get_filepaths(self):
-        return self.filepaths
+        return [self.filepaths[i] for i in self.indices]
+
+    def get_labels(self):
+        return [self.labels[i] for i in self.indices]
+
+    def get_indices(self):
+        return self.indices
+
+    def get_train_indices(self):
+        return self.train_indices
+
+    def get_val_indices(self):
+        return self.val_indices
 
 
 def get_datasets(train_folder, val_folder, test_folder):
