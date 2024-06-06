@@ -1,5 +1,6 @@
 import pandas as pd
 import torch
+from torch.utils.tensorboard import SummaryWriter
 from tqdm.notebook import tqdm
 
 
@@ -211,6 +212,153 @@ def train_model(
             "val_acc": max(results["val_acc"]),
         }
         df = pd.DataFrame([df_results])
-        return results, df
+        df_results_all = pd.DataFrame([results])
+        return results, df, df_results_all
+    else:
+        return results
+
+
+def train_model_with_tensorboard(
+    model: torch.nn.Module,
+    train_dataloader: torch.utils.data.DataLoader,
+    val_dataloader: torch.utils.data.DataLoader,
+    optimizer: torch.optim.Optimizer,
+    loss_fn: torch.nn.Module,
+    early_stopper,
+    lr_scheduler,
+    device,
+    return_df: bool = True,
+    epochs: int = 5,
+):
+    """Trains a model with callbacks for early stopping and learning rate scheduling.
+
+    Args:
+        model (torch.nn.Module): The model to train.
+        train_dataloader (torch.utils.data.DataLoader): DataLoader for the training data.
+        val_dataloader (torch.utils.data.DataLoader): DataLoader for the validation data.
+        optimizer (torch.optim.Optimizer): The optimizer.
+        loss_fn (torch.nn.Module): The loss function.
+        early_stopper: An instance of EarlyStopping for early stopping.
+        lr_scheduler: Learning rate scheduler.
+        device (torch.device): The device to run the model on.
+        return_df (bool, optional): Whether to return the results as a DataFrame. Defaults to True.
+        epochs (int, optional): The number of epochs to train. Defaults to 5.
+
+    Returns:
+        tuple: Results dictionary and optionally a DataFrame if return_df is True.
+
+    Example usage:
+        model = YourModel()
+        train_dataloader = get_dataloader(train_dataset)
+        val_dataloader = get_dataloader(val_dataset)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
+        loss_fn = nn.BCEWithLogitsLoss()
+        early_stopper = EarlyStopping(patience=8, verbose=True, path="best_model.pt")
+        lr_scheduler = ReduceLROnPlateau(optimizer, mode="min", factor=0.1, patience=4, verbose=True)
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        epochs = 10
+
+        results, df = train_model(
+            model, train_dataloader, val_dataloader, optimizer, loss_fn, early_stopper, lr_scheduler, device, epochs=epochs
+        )
+    """
+    # 2. Create empty results dictionary
+    results = {
+        "train_loss": [],
+        "train_acc": [],
+        "val_loss": [],
+        "val_acc": [],
+        "lr": [],
+    }
+
+    # Writer for Tensorboard
+    writer = SummaryWriter()
+
+    # Initial Learning Rate for Tracking
+    initial_lr = get_current_lr(optimizer)
+
+    # 3. Loop through training and testing steps for a number of epochs
+    for epoch in tqdm(range(epochs)):
+        train_loss, train_acc = train_step(
+            model=model,
+            dataloader=train_dataloader,
+            loss_fn=loss_fn,
+            optimizer=optimizer,
+            device=device,
+        )
+        val_loss, val_acc = val_step(
+            model=model, dataloader=val_dataloader, loss_fn=loss_fn, device=device
+        )
+
+        # get current learning rate
+        current_lr = get_current_lr(optimizer)
+
+        # 4. Update results dictionary
+        results["train_loss"].append(train_loss)
+        results["train_acc"].append(train_acc)
+        results["val_loss"].append(val_loss)
+        results["val_acc"].append(val_acc)
+        results["lr"].append(current_lr)
+
+        # 5. Print out what's happening
+        print(
+            f"Epoch: {epoch+1} | "
+            f"train_loss: {train_loss:.4f} | "
+            f"train_acc: {train_acc:.4f} | "
+            f"val_loss: {val_loss:.4f} | "
+            f"val_acc: {val_acc:.4f} | "
+            f"lr: {current_lr}"
+        )
+
+        # Tensorboard Tracking
+        writer.add_scalars(
+            main_tag="Loss",
+            tag_scalar_dict={"train_loss": train_loss, "val_loss": val_loss},
+            global_step=epoch,
+        )
+
+        writer.add_scalars(
+            main_tag="Accuracy",
+            tag_scalar_dict={"train_acc": train_acc, "val_acc": val_acc},
+            global_step=epoch,
+        )
+
+        # (BATCH, COLOR_CHANNELS, WIDTH, HEIGHT)
+        writer.add_graph(
+            model=model, input_to_model=torch.randn(32, 3, 224, 224).to(device)
+        )
+
+        # 6. Update Scheduler
+        lr_scheduler.step(val_loss)
+
+        # 7. Check Early Stopping
+        early_stopper(val_loss, model)
+        if early_stopper.early_stop:
+            early_stopped_epoch = epoch + 1
+            print(f"Early Stopping at Epoch: {epoch+1}")
+            break
+
+    writer.close()
+
+    early_stopper.load_best_weights(model)
+
+    if return_df:
+        df_results = {
+            "Model": model.__class__.__name__,
+            "Best Model Path": early_stopper.path,
+            "Original Epochs": epochs,
+            "Early Stopped Epoch": early_stopped_epoch,
+            "Optimizer": optimizer.__class__.__name__,
+            "Loss Function": loss_fn.__class__.__name__,
+            "initial_lr": initial_lr,
+            "final_lr": min(results["lr"]),
+            "train_loss": min(results["train_loss"]),
+            "train_acc": max(results["train_acc"]),
+            "val_loss": min(results["val_loss"]),
+            "val_acc": max(results["val_acc"]),
+        }
+        df = pd.DataFrame([df_results])
+        df_results_all = pd.DataFrame([results])
+        return results, df, df_results_all
     else:
         return results

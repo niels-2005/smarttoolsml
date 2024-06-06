@@ -1,10 +1,10 @@
 import timm
 import torch
+from sklearn.model_selection import train_test_split
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
-from torchvision.datasets import ImageFolder
 from torchvision import transforms
-from sklearn.model_selection import train_test_split
+from torchvision.datasets import ImageFolder
 
 
 class ImageDataset(Dataset):
@@ -26,17 +26,18 @@ class ImageDataset(Dataset):
         val_indices (list): List of indices for the validation subset.
     """
 
-    def __init__(self, data_dir, transform=None, subset='all', val_split=0.2, seed=42):
+    def __init__(self, data_dir, transform=None, subset="all", val_split=0.2, seed=42):
         self.data = ImageFolder(data_dir, transform=transform)
         self.filepaths = [s[0] for s in self.data.samples]
         self.labels = [s[1] for s in self.data.samples]
         self.indices = list(range(len(self.data)))
         self.train_indices, self.val_indices = train_test_split(
-            self.indices, test_size=val_split, random_state=seed, stratify=self.labels)
+            self.indices, test_size=val_split, random_state=seed, stratify=self.labels
+        )
 
-        if subset == 'train':
+        if subset == "train":
             self.indices = self.train_indices
-        elif subset == 'val':
+        elif subset == "val":
             self.indices = self.val_indices
 
     def __len__(self):
@@ -84,6 +85,13 @@ def get_datasets(train_folder, val_folder, test_folder):
             test_folder="path/to/test"
         )
     """
+    # normalize_transform = transforms.Compose([
+    # transforms.Resize((224, 224)),
+    # transforms.ToTensor(),
+    # transforms.Normalize(mean=[0.485, 0.456, 0.406],
+    #                      std=[0.229, 0.224, 0.225])
+    # ])
+
     # Train Augmentations if needed
     train_transform = transforms.Compose(
         [

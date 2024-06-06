@@ -1,7 +1,8 @@
+import pandas as pd
 import torch
 from torch import nn
+from torch.utils.tensorboard import SummaryWriter
 from tqdm.notebook import tqdm
-import pandas as pd
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -20,10 +21,11 @@ def accuracy_fn(y_true, y_pred):
     acc = (correct / len(y_pred)) * 100
     return acc
 
+
 def get_current_lr(optimizer):
     """Retrieve the current learning rate from optimizer."""
     for param_group in optimizer.param_groups:
-        return param_group['lr']
+        return param_group["lr"]
 
 
 def train_step(
@@ -31,7 +33,7 @@ def train_step(
     dataloader: torch.utils.data.DataLoader,
     loss_fn: torch.nn.Module,
     optimizer: torch.optim.Optimizer,
-    device: torch.device = device
+    device: torch.device = device,
 ):
     """Train step for a single epoch.
 
@@ -72,7 +74,7 @@ def val_step(
     model: torch.nn.Module,
     dataloader: torch.utils.data.DataLoader,
     loss_fn: torch.nn.Module,
-    device: torch.device = device
+    device: torch.device = device,
 ):
     """Validation step for a single epoch.
 
@@ -105,7 +107,7 @@ def val_step(
     return val_loss, val_acc
 
 
-def train_with_callbacks(
+def train_with_callbacks_tensorboard(
     model: torch.nn.Module,
     train_dataloader: torch.utils.data.DataLoader,
     val_dataloader: torch.utils.data.DataLoader,
@@ -114,7 +116,7 @@ def train_with_callbacks(
     early_stopper,
     lr_scheduler,
     return_df: bool = True,
-    epochs: int = 5
+    epochs: int = 5,
 ):
     """Train a model with early stopping and learning rate scheduling.
 
@@ -143,8 +145,20 @@ def train_with_callbacks(
         epochs = 5
         results, df = train_with_callbacks(model, train_dataloader, val_dataloader, optimizer, loss_fn, early_stopper, lr_scheduler, epochs)
     """
-    results = {"train_loss": [], "train_acc": [], "val_loss": [], "val_acc": [], "lr": []}
+    results = {
+        "train_loss": [],
+        "train_acc": [],
+        "val_loss": [],
+        "val_acc": [],
+        "lr": [],
+    }
     early_stopped_epoch = epochs
+
+    # Writer for Tensorboard
+    writer = SummaryWriter()
+
+    # Initial Learning Rate for Tracking
+    initial_lr = get_current_lr(optimizer)
 
     for epoch in tqdm(range(epochs)):
         train_loss, train_acc = train_step(
@@ -152,13 +166,140 @@ def train_with_callbacks(
             dataloader=train_dataloader,
             loss_fn=loss_fn,
             optimizer=optimizer,
-            device=device
+            device=device,
         )
         val_loss, val_acc = val_step(
+            model=model, dataloader=val_dataloader, loss_fn=loss_fn, device=device
+        )
+
+        current_lr = get_current_lr(optimizer)
+
+        results["train_loss"].append(train_loss)
+        results["train_acc"].append(train_acc)
+        results["val_loss"].append(val_loss)
+        results["val_acc"].append(val_acc)
+        results["lr"].append(current_lr)
+
+        print(
+            f"Epoch: {epoch+1} | "
+            f"train_loss: {train_loss:.4f} | "
+            f"train_acc: {train_acc:.4f} | "
+            f"val_loss: {val_loss:.4f} | "
+            f"val_acc: {val_acc:.4f} | "
+            f"lr: {current_lr}"
+        )
+
+        # Tensorboard Tracking
+        writer.add_scalars(
+            main_tag="Loss",
+            tag_scalar_dict={"train_loss": train_loss, "val_loss": val_loss},
+            global_step=epoch,
+        )
+
+        writer.add_scalars(
+            main_tag="Accuracy",
+            tag_scalar_dict={"train_acc": train_acc, "val_acc": val_acc},
+            global_step=epoch,
+        )
+
+        # (BATCH, COLOR_CHANNELS, WIDTH, HEIGHT)
+        writer.add_graph(
+            model=model, input_to_model=torch.randn(32, 3, 224, 224).to(device)
+        )
+
+        lr_scheduler.step(val_loss)
+        early_stopper(val_loss, model)
+        if early_stopper.early_stop:
+            early_stopped_epoch = epoch + 1
+            print(f"Early Stopping at Epoch: {epoch+1}")
+            break
+
+    writer.close()
+
+    early_stopper.load_best_weights(model)
+
+    if return_df:
+        df_results = {
+            "Model": model.__class__.__name__,
+            "Best Model Path": early_stopper.path,
+            "Original Epochs": epochs,
+            "Early Stopped Epoch": early_stopped_epoch,
+            "Optimizer": optimizer.__class__.__name__,
+            "Loss Function": loss_fn.__class__.__name__,
+            "initial_lr": initial_lr,
+            "final_lr": min(results["lr"]),
+            "train_loss": min(results["train_loss"]),
+            "train_acc": max(results["train_acc"]),
+            "val_loss": min(results["val_loss"]),
+            "val_acc": max(results["val_acc"]),
+        }
+        df = pd.DataFrame([df_results])
+        df_results_all = pd.DataFrame([results])
+        return results, df, df_results_all
+    else:
+        return results
+
+
+def train_with_callbacks(
+    model: torch.nn.Module,
+    train_dataloader: torch.utils.data.DataLoader,
+    val_dataloader: torch.utils.data.DataLoader,
+    optimizer: torch.optim.Optimizer,
+    loss_fn: torch.nn.Module,
+    early_stopper,
+    lr_scheduler,
+    return_df: bool = True,
+    epochs: int = 5,
+):
+    """Train a model with early stopping and learning rate scheduling.
+
+    Args:
+        model (torch.nn.Module): Model to train.
+        train_dataloader (torch.utils.data.DataLoader): DataLoader for the training data.
+        val_dataloader (torch.utils.data.DataLoader): DataLoader for the validation data.
+        optimizer (torch.optim.Optimizer): Optimizer.
+        loss_fn (torch.nn.Module): Loss function.
+        early_stopper: Early stopping callback.
+        lr_scheduler: Learning rate scheduler.
+        epochs (int, optional): Number of epochs to train. Defaults to 5.
+
+    Returns:
+        dict: Training and validation metrics.
+        pd.DataFrame: DataFrame containing summary of results.
+
+    Example usage:
+        model = Model()
+        train_dataloder = get_dataloader()
+        val_dataloader = get_dataloader()
+        optimizer = optim.Adam(model.parameters(), lr=1e-4)
+        loss_fn = nn.CrossEntropyLoss()
+        early_stopper = EarlyStopping()
+        lr_scheduler = lr_scheduler()
+        epochs = 5
+        results, df = train_with_callbacks(model, train_dataloader, val_dataloader, optimizer, loss_fn, early_stopper, lr_scheduler, epochs)
+    """
+    results = {
+        "train_loss": [],
+        "train_acc": [],
+        "val_loss": [],
+        "val_acc": [],
+        "lr": [],
+    }
+    early_stopped_epoch = epochs
+
+    # Initial Learning Rate for Tracking
+    initial_lr = get_current_lr(optimizer)
+
+    for epoch in tqdm(range(epochs)):
+        train_loss, train_acc = train_step(
             model=model,
-            dataloader=val_dataloader,
+            dataloader=train_dataloader,
             loss_fn=loss_fn,
-            device=device
+            optimizer=optimizer,
+            device=device,
+        )
+        val_loss, val_acc = val_step(
+            model=model, dataloader=val_dataloader, loss_fn=loss_fn, device=device
         )
 
         current_lr = get_current_lr(optimizer)
@@ -181,9 +322,11 @@ def train_with_callbacks(
         lr_scheduler.step(val_loss)
         early_stopper(val_loss, model)
         if early_stopper.early_stop:
-            early_stopped_epoch = epoch+1
+            early_stopped_epoch = epoch + 1
             print(f"Early Stopping at Epoch: {epoch+1}")
             break
+
+    early_stopper.load_best_weights(model)
 
     if return_df:
         df_results = {
@@ -193,13 +336,15 @@ def train_with_callbacks(
             "Early Stopped Epoch": early_stopped_epoch,
             "Optimizer": optimizer.__class__.__name__,
             "Loss Function": loss_fn.__class__.__name__,
+            "initial_lr": initial_lr,
             "final_lr": min(results["lr"]),
             "train_loss": min(results["train_loss"]),
             "train_acc": max(results["train_acc"]),
             "val_loss": min(results["val_loss"]),
-            "val_acc": max(results["val_acc"])
+            "val_acc": max(results["val_acc"]),
         }
         df = pd.DataFrame([df_results])
-        return results, df
+        df_results_all = pd.DataFrame([results])
+        return results, df, df_results_all
     else:
         return results
