@@ -1,5 +1,5 @@
-import librosa 
-import numpy as np 
+import librosa
+import numpy as np
 from feature_extraction import extract_features
 
 
@@ -16,7 +16,7 @@ def get_predict_feat(path, scaler):
 
 
 def prediction(audio_path, model, encoder, scaler):
-    res=get_predict_feat(audio_path, scaler)
-    predictions=model.predict(res)
+    res = get_predict_feat(audio_path, scaler)
+    predictions = model.predict(res)
     y_pred = encoder.inverse_transform(predictions)
-    print(y_pred[0][0])   
+    print(y_pred[0][0])

@@ -1,4 +1,5 @@
-import pandas as pd 
+import pandas as pd
+
 
 def get_predictions_as_df(model, X_test, y_true, encoder):
     """_summary_
@@ -15,7 +16,7 @@ def get_predictions_as_df(model, X_test, y_true, encoder):
     Example usage:
         encoder = OneHotEncoder()
         model = Model()
-        
+
         df = get_predictions_as_df(model, X_test, y_true, encoder=encoder)
     """
     y_pred = model.predict(X_test)
@@ -27,4 +28,3 @@ def get_predictions_as_df(model, X_test, y_true, encoder):
     df["True Labels"] = y_true.flatten()
 
     return df
-

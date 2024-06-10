@@ -1,11 +1,15 @@
-import numpy as np 
 import librosa
-from smarttoolsml.tf_templates.audio.data_augmentation import noise, pitch
-import pandas as pd 
+import numpy as np
+import pandas as pd
 from joblib import Parallel, delayed
 
+from smarttoolsml.tf_templates.audio.data_augmentation import noise, pitch
+
+
 def zcr(data, frame_length=2048, hop_length=512):
-    zcr = librosa.feature.zero_crossing_rate(y=data, frame_length=frame_length, hop_length=hop_length)
+    zcr = librosa.feature.zero_crossing_rate(
+        y=data, frame_length=frame_length, hop_length=hop_length
+    )
     return np.squeeze(zcr)
 
 
@@ -23,7 +27,7 @@ def extract_features(data, sr=22050, frame_length=2048, hop_length=512):
     zcr_feat = zcr(data, frame_length, hop_length)
     rmse_feat = rmse(data, frame_length, hop_length)
     mfcc_feat = mfcc(data, sr, frame_length, hop_length)
-    
+
     result = np.hstack((zcr_feat, rmse_feat, mfcc_feat))
     return result
 
@@ -32,21 +36,21 @@ def get_features(path, duration=2.5, offset=0.6):
     data, sr = librosa.load(path, duration=duration, offset=offset)
     aud = extract_features(data, sr)
     audio = np.array([aud])
-    
+
     noised_audio = noise(data)
     aud2 = extract_features(noised_audio, sr)
     audio = np.vstack((audio, aud2))
-    
+
     pitched_audio = pitch(data, sr)
     aud3 = extract_features(pitched_audio, sr)
     audio = np.vstack((audio, aud3))
-    
+
     pitched_audio1 = pitch(data, sr)
     pitched_noised_audio = noise(pitched_audio1)
     aud4 = extract_features(pitched_noised_audio, sr)
     audio = np.vstack((audio, aud4))
-    
-    return audio 
+
+    return audio
 
 
 def process_feature(path, emotion):
@@ -78,16 +82,19 @@ def get_X_y(df: pd.DataFrame):
     paths = df["Path"]
     emotions = df["Emotions"]
 
-    results = Parallel(n_jobs=-1)(delayed(process_feature)(path, emotion) for (path, emotion) in zip(paths, emotions))
+    results = Parallel(n_jobs=-1)(
+        delayed(process_feature)(path, emotion)
+        for (path, emotion) in zip(paths, emotions)
+    )
 
     X = []
     Y = []
     for result in results:
-        x, y = result 
+        x, y = result
         X.extend(x)
         Y.extend(y)
 
     df = pd.DataFrame(X)
-    df["Emotions"] = Y 
+    df["Emotions"] = Y
     df.to_csv("preprocessed_df.csv", index=False)
     return df

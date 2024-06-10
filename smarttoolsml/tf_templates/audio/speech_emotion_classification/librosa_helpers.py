@@ -1,6 +1,6 @@
-import librosa 
-import matplotlib.pyplot as plt
 import IPython.display as ipd
+import librosa
+import matplotlib.pyplot as plt
 
 
 def load_audio_file(path):
@@ -24,4 +24,4 @@ def play_and_plot_audio(path):
     data, sr = librosa.load(path)
     plt.figure(figsize=(12, 6))
     librosa.display.waveshow(y=data, sr=sr)
-    ipd.Audio(data,rate=sr)
+    ipd.Audio(data, rate=sr)

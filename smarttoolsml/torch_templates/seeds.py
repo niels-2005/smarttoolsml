@@ -1,7 +1,7 @@
-import torch 
+import torch
 
 
-def set_seeds(seed: int=42):
+def set_seeds(seed: int = 42):
     """Sets random sets for torch operations.
 
     Args:
