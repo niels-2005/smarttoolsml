@@ -20,11 +20,11 @@ def mfcc(data, sr, frame_length=2048, hop_length=512, flatten=True):
 
 
 def extract_features(data, sr=22050, frame_length=2048, hop_length=512):
-    result = np.array([])
-    result = np.hstack((result,
-                        zcr(data, frame_length, hop_length),
-                        rmse(data, frame_length, hop_length),
-                        mfcc(data, sr, frame_length, hop_length)))
+    zcr_feat = zcr(data, frame_length, hop_length)
+    rmse_feat = rmse(data, frame_length, hop_length)
+    mfcc_feat = mfcc(data, sr, frame_length, hop_length)
+    
+    result = np.hstack((zcr_feat, rmse_feat, mfcc_feat))
     return result
 
 
