@@ -185,7 +185,7 @@ def compare_pipelines(
                 va="center",
             )
         plt.xlabel(f"{metric.capitalize()}")
-        plt.title("Classifier Performance Comparison")
+        plt.title(f"{metric} Performance Comparison")
         plt.xlim(0, 1)
         plt.gca().invert_yaxis()
         plt.show()
