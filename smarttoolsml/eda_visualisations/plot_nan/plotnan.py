@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import missingno as msno
 import pandas as pd
+import seaborn as sns
 
 
 def plot_nans_with_df(
@@ -29,4 +30,29 @@ def plot_nans_with_df(
         msno.matrix(df)
 
     plt.title(title)
+    plt.show()
+
+
+def plot_missing_values_dist(df: pd.DataFrame, threshold: int = 0):
+    """_summary_
+
+    Args:
+        df (pd.DataFrame): _description_
+        threshold (int, optional): _description_. Defaults to 0.
+
+    Example usage:
+        df = pd.read_csv("...")
+        plot_missing_values_dist(df=df, threshold=20)
+
+        threshold = Schwellenwert worüber Columns angezeigt werden
+    """
+    missing_values = df.isnull().mean() * 100 
+    missing_values = missing_values[missing_values > threshold].sort_values(ascending=False)
+
+    plt.figure(figsize=(10, 6))
+    sns.barplot(x=missing_values.index, y=missing_values.values, hue=missing_values.index)
+    plt.xticks(rotation=90)
+    plt.xlabel('Features')
+    plt.ylabel('Percentage of Missing Values')
+    plt.title(f'Missing Values Distribution in df_train (threshold = {threshold})')
     plt.show()
