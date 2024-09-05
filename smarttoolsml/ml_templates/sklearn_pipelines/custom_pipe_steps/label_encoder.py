@@ -3,6 +3,26 @@ from sklearn.preprocessing import LabelEncoder
 
 
 class CustomLabelEncoder(BaseEstimator, TransformerMixin):
+    """_summary_
+
+    Args:
+        BaseEstimator (_type_): _description_
+        TransformerMixin (_type_): _description_
+    
+    Example usage:
+            classification_pipeline = Pipeline(
+        [
+            ('DomainProcessing', pp.DomainProcessing(variable_to_add=config.FEATURE_TO_ADD)),
+            ('DropFeatures', pp.DropColumns(variables_to_drop=config.DROP_FEATURES)),
+
+            # LabelEncoder here
+            ('LabelEncoder', pp.CustomLabelEncoder(variables=config.FEATURES_TO_ENCODE)),
+            
+            ('LogTransform', pp.LogTransforms(variables=config.LOG_FEATURES)),
+            ('LogisticClassifier', LogisticRegression(random_state=0))
+        ]
+    )
+    """
     def __init__(self, variables=None):
         self.variables = variables
         self.encoders = {}
