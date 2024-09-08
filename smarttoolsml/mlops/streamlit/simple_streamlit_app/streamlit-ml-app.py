@@ -1,10 +1,9 @@
-import streamlit as st
-import pandas as pd
-
-import sys
 import os
+import sys
 from pathlib import Path
 
+import pandas as pd
+import streamlit as st
 
 # to run: streamlit run streamlit-ml-app.py
 
