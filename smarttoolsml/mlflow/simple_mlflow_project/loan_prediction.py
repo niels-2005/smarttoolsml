@@ -120,6 +120,7 @@ model_tree = grid_tree.fit(X_train, y_train)
 
 mlflow.set_experiment("Loan_prediction")
 
+
 # Model evelaution metrics
 def eval_metrics(actual, pred):
     accuracy = metrics.accuracy_score(actual, pred)

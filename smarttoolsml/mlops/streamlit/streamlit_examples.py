@@ -22,14 +22,12 @@ if st.checkbox("Select/Unselect"):
 else:
     st.text("User has not selected the checkbox")
 
-state = st.radio("What is your favorite Color ?", 
-("Red",'Green',"yellow"))
+state = st.radio("What is your favorite Color ?", ("Red", "Green", "yellow"))
 
-if state == 'Green':
+if state == "Green":
     st.success("Thats my favorite color as well")
 
-occupation = st.selectbox("What do you do ?",
-["Student","Vlogger","Engineer"])
+occupation = st.selectbox("What do you do ?", ["Student", "Vlogger", "Engineer"])
 
 st.text(f"selected option is {occupation}")
 
