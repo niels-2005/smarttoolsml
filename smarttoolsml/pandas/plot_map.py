@@ -1,6 +1,6 @@
-import matplotlib.pyplot as plt 
-import geopandas as gpd 
 import geodatasets
+import geopandas as gpd
+import matplotlib.pyplot as plt
 import pandas as pd
 
 
@@ -15,7 +15,8 @@ def plot_map(df_stores: pd.DataFrame):
         usa = gpd.read_file(geodatasets.get_path("geoda us_sdoh")) = United States Map (documentation)
     """
     gdf = gpd.GeoDataFrame(
-        df_stores, geometry=gpd.points_from_xy(df_stores["longitude"], df_stores["latitude"])
+        df_stores,
+        geometry=gpd.points_from_xy(df_stores["longitude"], df_stores["latitude"]),
     )
 
     # Lade die USA-Karte aus geodatasets
@@ -26,9 +27,9 @@ def plot_map(df_stores: pd.DataFrame):
     usa.plot(ax=ax)
 
     # Plot der Stores
-    gdf.plot(ax=ax, color='red', markersize=50)
+    gdf.plot(ax=ax, color="red", markersize=50)
 
-    plt.title('Store Locations in the United States')
-    plt.xlabel('Longitude')
-    plt.ylabel('Latitude')
+    plt.title("Store Locations in the United States")
+    plt.xlabel("Longitude")
+    plt.ylabel("Latitude")
     plt.show()

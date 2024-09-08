@@ -5,7 +5,7 @@ import argparse
 
 # simple eval function
 def eval(p1, p2):
-    output_metric = p1**2 + p2**2
+    output_metric = p1 ** 2 + p2 ** 2
     return output_metric
 
 
@@ -15,12 +15,12 @@ def main(inp1, inp2):
     return metric
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     args = argparse.ArgumentParser()
 
-    # add arguments to cmd commando 
-    args.add_argument("--param1","-p1", type=int, default=5)
-    args.add_argument("--param2","-p2", type=int, default=10)
+    # add arguments to cmd commando
+    args.add_argument("--param1", "-p1", type=int, default=5)
+    args.add_argument("--param2", "-p2", type=int, default=10)
     parsed_args = args.parse_args()
 
     # parsed_args.param1

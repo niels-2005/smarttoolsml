@@ -1,4 +1,4 @@
-import pandas as pd 
+import pandas as pd
 
 
 def replace_values(df: pd.DataFrame):
@@ -15,4 +15,4 @@ def replace_values(df: pd.DataFrame):
         we want only McDonalds in DataFrame
     """
     df["store_name"] = df["store_name"].replace("yyyMcDonald's", "McDonalds")
-    return df 
+    return df

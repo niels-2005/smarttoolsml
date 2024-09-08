@@ -1,6 +1,6 @@
-from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OneHotEncoder, StandardScaler, OrdinalEncoder
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, StandardScaler
 
 
 def get_preprocessor_for_pipe(categorical_fea: list, numerical_fea: list):
@@ -12,7 +12,7 @@ def get_preprocessor_for_pipe(categorical_fea: list, numerical_fea: list):
 
     Returns:
         _type_: _description_
-    
+
     Example usage:
         categorical_fea = ["f1", "f2"]
         numerical_fea = ["f3", "f4"]
@@ -30,7 +30,7 @@ def get_preprocessor_for_pipe(categorical_fea: list, numerical_fea: list):
     preprocessor = ColumnTransformer(
         transformers=[
             ("cat", OneHotEncoder(sparse=False, drop="first"), categorical_fea),
-            ("num", StandardScaler(), numerical_fea)
+            ("num", StandardScaler(), numerical_fea),
         ]
     )
 

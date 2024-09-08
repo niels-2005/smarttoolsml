@@ -1,26 +1,25 @@
-from fastapi import FastAPI 
-
+from fastapi import FastAPI
 
 # define app
-app = FastAPI() 
+app = FastAPI()
 
 
 # get operation with decorator
-@app.get("/") 
+@app.get("/")
 async def root():
-    return {"message":"Hello World from FASTAPI"}
+    return {"message": "Hello World from FASTAPI"}
 
 
 # get operation with decorator
 @app.get("/demo")
 def demo_func():
-    return {"message":"This is output from demo function"}
+    return {"message": "This is output from demo function"}
 
 
 # post operation with decorator
-@app.post("/post_demo") 
+@app.post("/post_demo")
 def demo_post():
-    return {"message":"This is output from post demo function"}
+    return {"message": "This is output from post demo function"}
 
 
 @app.update("/update_demo")

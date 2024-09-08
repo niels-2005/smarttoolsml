@@ -1,16 +1,15 @@
-from pydantic import BaseModel 
-
+from pydantic import BaseModel
 
 data = {
     "name": "Murthy",
     "age": "28",
     "course": "MLOps Bootcamp",
-    "ratings": [4, 4, 4, "4", "5"]
+    "ratings": [4, 4, 4, "4", "5"],
 }
 
 
 class Instructor(BaseModel):
-    name: str 
+    name: str
     age: int
     course: str
     ratings: list[int] = []

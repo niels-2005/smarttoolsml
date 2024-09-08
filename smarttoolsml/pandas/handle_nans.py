@@ -1,7 +1,9 @@
 import pandas as pd
 
 
-def drop_columns_threshold(df_train: pd.DataFrame, df_test: pd.DataFrame, threshold: int = 80):
+def drop_columns_threshold(
+    df_train: pd.DataFrame, df_test: pd.DataFrame, threshold: int = 80
+):
     """_summary_
 
     Args:
@@ -11,7 +13,7 @@ def drop_columns_threshold(df_train: pd.DataFrame, df_test: pd.DataFrame, thresh
 
     Returns:
         _type_: _description_
-    
+
     Example usage:
         threshold = 80
 
@@ -27,7 +29,9 @@ def drop_columns_threshold(df_train: pd.DataFrame, df_test: pd.DataFrame, thresh
     return df_train, df_test
 
 
-def fill_na_columns(df_train: pd.DataFrame, df_test: pd.DataFrame, fill_median: bool = True):
+def fill_na_columns(
+    df_train: pd.DataFrame, df_test: pd.DataFrame, fill_median: bool = True
+):
     """_summary_
 
     Args:
@@ -37,7 +41,7 @@ def fill_na_columns(df_train: pd.DataFrame, df_test: pd.DataFrame, fill_median: 
 
     Returns:
         _type_: _description_
-    
+
     Example usage:
         df_train, df_test = fill_na_columns(df_train=df_train, df_test=df_test, fill_median=True)
 

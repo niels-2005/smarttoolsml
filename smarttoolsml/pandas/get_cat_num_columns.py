@@ -1,6 +1,9 @@
-import pandas as pd 
+import pandas as pd
 
-def get_columns(df: pd.DataFrame, print_unique_cat_values: bool = True, print_columns: bool = True):
+
+def get_columns(
+    df: pd.DataFrame, print_unique_cat_values: bool = True, print_columns: bool = True
+):
     """_summary_
 
     Args:
@@ -17,7 +20,7 @@ def get_columns(df: pd.DataFrame, print_unique_cat_values: bool = True, print_co
         cat_cols, num_cols = get_columns(df=df, print_unique_cat_values = True, print_columns = True)
     """
     cat_cols = df.select_dtypes(include=["object"]).columns
-    num_cols = df.select_dtypes(include=["number"]).columns 
+    num_cols = df.select_dtypes(include=["number"]).columns
 
     if print_columns:
         print("Categorical Columns:", cat_cols, "\n")
@@ -27,5 +30,5 @@ def get_columns(df: pd.DataFrame, print_unique_cat_values: bool = True, print_co
         unique_values = {col: df[col].nunique() for col in cat_cols}
         for col, unique_count in unique_values.items():
             print(f"{col}: {unique_count} unique values")
-        
+
     return cat_cols, num_cols

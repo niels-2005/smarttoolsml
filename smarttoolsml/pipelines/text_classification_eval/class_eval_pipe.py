@@ -42,7 +42,9 @@ def classification_evaluation_pipeline(
     print("1. Printing Classification Report")
     print(classification_report(y_pred=y_pred, y_true=y_true, target_names=classes))
     print("2. Plotting Classification Report with Support")
-    report = classification_report(y_pred=y_pred, y_true=y_true, output_dict=True, target_names=classes)
+    report = classification_report(
+        y_pred=y_pred, y_true=y_true, output_dict=True, target_names=classes
+    )
     plot_classification_report_with_support(report=report)
     print("3. Plot Confusion Matrix")
     make_confusion_matrix(y_true=y_true, y_pred=y_pred, classes=classes)
@@ -56,19 +58,19 @@ def classification_evaluation_pipeline(
 
 def plot_classification_report_with_support(report):
     labels = list(report.keys())[:-3]  # Exclude 'accuracy', 'macro avg', 'weighted avg'
-    metrics = ['precision', 'recall', 'f1-score', 'support']
+    metrics = ["precision", "recall", "f1-score", "support"]
     data = np.array([[report[label][metric] for metric in metrics] for label in labels])
     fig, ax = plt.subplots(figsize=(12, 6))
-    cax = ax.matshow(data, cmap='coolwarm')
+    cax = ax.matshow(data, cmap="coolwarm")
     plt.xticks(range(len(metrics)), metrics)
     plt.yticks(range(len(labels)), labels)
     plt.colorbar(cax)
     # Adding the text
     for (i, j), val in np.ndenumerate(data):
-        ax.text(j, i, f'{val:.2f}', ha='center', va='center', color='white')
-    plt.xlabel('Metrics')
-    plt.ylabel('Classes')
-    plt.title('Classification Report with Support')
+        ax.text(j, i, f"{val:.2f}", ha="center", va="center", color="white")
+    plt.xlabel("Metrics")
+    plt.ylabel("Classes")
+    plt.title("Classification Report with Support")
     plt.show()
 
 

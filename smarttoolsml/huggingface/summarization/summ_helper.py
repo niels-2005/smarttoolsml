@@ -1,8 +1,8 @@
-from transformers import pipeline 
-import numpy as np#
 import evaluate
-from transformers import DataCollatorForSeq2Seq
-from transformers import AutoModelForSeq2SeqLM, Seq2SeqTrainingArguments, Seq2SeqTrainer
+import numpy as np
+from transformers import (AutoModelForSeq2SeqLM, DataCollatorForSeq2Seq,
+                          Seq2SeqTrainer, Seq2SeqTrainingArguments, pipeline)
+
 
 def load_pretrained_model(model_name: str, article: str, task: str = "summarization"):
     """_summary_
@@ -18,7 +18,9 @@ def load_pretrained_model(model_name: str, article: str, task: str = "summarizat
         load_pretrained_model(model_name=checkpoint, article=ARTICLE)
     """
     summarizer = pipeline(task, model=model_name)
-    summarized_text = summarizer(article, max_length=512, min_length=30, do_sample=False)
+    summarized_text = summarizer(
+        article, max_length=512, min_length=30, do_sample=False
+    )
     print(summarized_text[0]["summary_text"])
 
 
@@ -72,9 +74,13 @@ def compute_metrics(eval_pred):
     labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
     decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
 
-    result = rouge.compute(predictions=decoded_preds, references=decoded_labels, use_stemmer=True)
+    result = rouge.compute(
+        predictions=decoded_preds, references=decoded_labels, use_stemmer=True
+    )
 
-    prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id) for pred in predictions]
+    prediction_lens = [
+        np.count_nonzero(pred != tokenizer.pad_token_id) for pred in predictions
+    ]
     result["gen_len"] = np.mean(prediction_lens)
 
     return {k: round(v, 4) for k, v in result.items()}
@@ -86,7 +92,9 @@ def load_metric():
 
 
 def load_datgacollator(tokenizer):
-    data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model="google-t5/t5-small")
+    data_collator = DataCollatorForSeq2Seq(
+        tokenizer=tokenizer, model="google-t5/t5-small"
+    )
     return data_collator
 
 
@@ -104,7 +112,7 @@ def finetune_model():
         num_train_epochs=4,
         predict_with_generate=True,
         fp16=True,
-        gradient_accumulation_steps=2 # if gpu memory isnt enough
+        gradient_accumulation_steps=2,  # if gpu memory isnt enough
     )
 
     trainer = Seq2SeqTrainer(

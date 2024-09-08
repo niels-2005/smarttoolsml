@@ -1,4 +1,4 @@
-from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
+from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
 
 
 def scale_data(X_train, X_test, scaler):
@@ -11,7 +11,7 @@ def scale_data(X_train, X_test, scaler):
 
     Returns:
         _type_: _description_
-    
+
     Example usage:
         X_train = [...]
         X_test = [...]

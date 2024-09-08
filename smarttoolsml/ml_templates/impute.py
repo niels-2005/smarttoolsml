@@ -1,7 +1,7 @@
-from sklearn.impute import SimpleImputer, KNNImputer, IterativeImputer
-import pandas as pd 
 import numpy as np
+import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.impute import IterativeImputer, KNNImputer, SimpleImputer
 
 
 def simple_impute_df(df: pd.DataFrame, strategy: str = "mean"):
@@ -13,7 +13,7 @@ def simple_impute_df(df: pd.DataFrame, strategy: str = "mean"):
 
     Returns:
         _type_: _description_
-    
+
     Example usage:
         df = pd.read_csv("...")
         df_imp = simple_impute_df(df=df, strategy = "mean")
@@ -23,7 +23,9 @@ def simple_impute_df(df: pd.DataFrame, strategy: str = "mean"):
     return df_imp
 
 
-def simple_impute_column(df: pd.DataFrame, df_column: str, strategy: str = "mean", add_indicator: bool = True):
+def simple_impute_column(
+    df: pd.DataFrame, df_column: str, strategy: str = "mean", add_indicator: bool = True
+):
     """_summary_
 
     Args:
@@ -43,7 +45,9 @@ def simple_impute_column(df: pd.DataFrame, df_column: str, strategy: str = "mean
 
         # add_indicator = True fügt eine zusätzliche Spalte hinzu auf Basis ob Wert vorhanden war oder nicht
     """
-    si = SimpleImputer(missing_values=np.nan, strategy=strategy, add_indicator=add_indicator)
+    si = SimpleImputer(
+        missing_values=np.nan, strategy=strategy, add_indicator=add_indicator
+    )
 
     if add_indicator:
         indicator_column = df_column + "_indicator"
@@ -63,7 +67,7 @@ def knn_impute_df(df: pd.DataFrame, weights: str = "distance", n_neighbors: int 
 
     Returns:
         _type_: _description_
-    
+
     Example usage:
         df = pd.read_csv("...")
         df_imp = knn_impute_df(df=df,weights="distance", n_neighbors=10)
@@ -73,7 +77,13 @@ def knn_impute_df(df: pd.DataFrame, weights: str = "distance", n_neighbors: int 
     return df_imp
 
 
-def knn_impute_column(df: pd.DataFrame, df_column: str, n_neighbors: int = 5, weights: str = "distance", add_indicator: bool = True):
+def knn_impute_column(
+    df: pd.DataFrame,
+    df_column: str,
+    n_neighbors: int = 5,
+    weights: str = "distance",
+    add_indicator: bool = True,
+):
     """_summary_
 
     Args:
@@ -84,7 +94,7 @@ def knn_impute_column(df: pd.DataFrame, df_column: str, n_neighbors: int = 5, we
 
     Returns:
         _type_: _description_
-    
+
     Example usage:
         df = pd.read_csv("...")
         df_column = "age"
@@ -93,7 +103,12 @@ def knn_impute_column(df: pd.DataFrame, df_column: str, n_neighbors: int = 5, we
 
         # add_indicator = True fügt eine zusätzliche Spalte hinzu auf Basis ob Wert vorhanden war oder nicht
     """
-    ki = KNNImputer(missing_values=np.nan, weights=weights, add_indicator=add_indicator, n_neighbors=n_neighbors)
+    ki = KNNImputer(
+        missing_values=np.nan,
+        weights=weights,
+        add_indicator=add_indicator,
+        n_neighbors=n_neighbors,
+    )
 
     if add_indicator:
         indicator_column = df_column + "_indicator"
@@ -112,18 +127,20 @@ def iterative_impute_df(df: pd.DataFrame):
 
     Returns:
         _type_: _description_
-    
+
     Example usage:
         df = pd.read_csv("...")
         df_imp = iterative_impute_df(df=df)
     """
     estimator = RandomForestRegressor()
-    iirf = IterativeImputer(missing_values = np.nan, estimator=estimator)
+    iirf = IterativeImputer(missing_values=np.nan, estimator=estimator)
     df_imp = pd.DataFrame(iirf.fit_transform(df), columns=df.columns)
     return df_imp
 
 
-def iterative_impute_column(df: pd.DataFrame, df_column: str, add_indicator: bool = True):
+def iterative_impute_column(
+    df: pd.DataFrame, df_column: str, add_indicator: bool = True
+):
     """_summary_
 
     Args:
@@ -134,12 +151,12 @@ def iterative_impute_column(df: pd.DataFrame, df_column: str, add_indicator: boo
         _type_: _description_
     """
     estimator = RandomForestRegressor()
-    iirf = IterativeImputer(missing_values = np.nan, estimator=estimator)
+    iirf = IterativeImputer(missing_values=np.nan, estimator=estimator)
 
     if add_indicator:
         indicator_column = df_column + "_indicator"
         df[[df_column, indicator_column]] = iirf.fit_transform(df[[df_column]])
     else:
         df[[df_column]] = iirf.fit_transform(df[[df_column]])
-    
+
     return df

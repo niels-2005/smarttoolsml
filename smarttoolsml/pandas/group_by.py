@@ -1,4 +1,4 @@
-import pandas as pd 
+import pandas as pd
 
 
 def group_by(df: pd.DataFrame):

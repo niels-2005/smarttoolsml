@@ -46,13 +46,17 @@ def plot_missing_values_dist(df: pd.DataFrame, threshold: int = 0):
 
         threshold = Schwellenwert worüber Columns angezeigt werden
     """
-    missing_values = df.isnull().mean() * 100 
-    missing_values = missing_values[missing_values > threshold].sort_values(ascending=False)
+    missing_values = df.isnull().mean() * 100
+    missing_values = missing_values[missing_values > threshold].sort_values(
+        ascending=False
+    )
 
     plt.figure(figsize=(10, 6))
-    sns.barplot(x=missing_values.index, y=missing_values.values, hue=missing_values.index)
+    sns.barplot(
+        x=missing_values.index, y=missing_values.values, hue=missing_values.index
+    )
     plt.xticks(rotation=90)
-    plt.xlabel('Features')
-    plt.ylabel('Percentage of Missing Values')
-    plt.title(f'Missing Values Distribution in df_train (threshold = {threshold})')
+    plt.xlabel("Features")
+    plt.ylabel("Percentage of Missing Values")
+    plt.title(f"Missing Values Distribution in df_train (threshold = {threshold})")
     plt.show()

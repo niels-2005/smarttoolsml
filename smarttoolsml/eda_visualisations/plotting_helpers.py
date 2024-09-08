@@ -35,7 +35,7 @@ def custom_hue_names(df: pd.DataFrame):
     plt.figure(figsize=(10, 5))
     ax = sns.countplot(data=df, x="sex", hue="output")
     plt.title("Heart Failure between Male and Female")
-    ax.set_xticks([0, 1]) 
+    ax.set_xticks([0, 1])
     ax.set_xticklabels(["Female", "Male"])
     # get legend
     handles, labels = ax.get_legend_handles_labels()
