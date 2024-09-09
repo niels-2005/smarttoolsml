@@ -5,7 +5,7 @@ import argparse
 
 # simple eval function
 def eval(p1, p2):
-    output_metric = p1**2 + p2**2
+    output_metric = p1 ** 2 + p2 ** 2
     return output_metric
 
 
