@@ -55,20 +55,25 @@ def label_encode_col(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
     return df
 
 
-def get_dummies(df: pd.DataFrame, col: str):
+
+def cat_cols_get_dummies(df: pd.DataFrame, cat_cols: list[str]):
     """_summary_
 
     Args:
         df (pd.DataFrame): _description_
-        col (str): _description_
+        cat_cols (list[str]): _description_
 
     Returns:
         _type_: _description_
-
+    
     Example usage:
-        df = get_dummies(df=df, col="Sex")
+        df = pd.read_csv("...")
+        cat_cols = ["f1", "f2"]
+
+        df = cat_cols_get_dummies(df=df, cat_cols=cat_cols)
     """
-    dummies = pd.get_dummies(df[col], prefix=col).astype(int)
-    df = df.drop(columns=[col])
-    df_dummies = pd.concat([df, dummies], axis=1)
-    return df_dummies
+    for col in cat_cols:
+        df = pd.concat([df, pd.get_dummies(df[col])], axis=1)
+        df = df.drop(col, axis=1)
+    return df
+
