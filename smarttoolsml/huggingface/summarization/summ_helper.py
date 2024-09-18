@@ -1,12 +1,7 @@
 import evaluate
 import numpy as np
-from transformers import (
-    AutoModelForSeq2SeqLM,
-    DataCollatorForSeq2Seq,
-    Seq2SeqTrainer,
-    Seq2SeqTrainingArguments,
-    pipeline,
-)
+from transformers import (AutoModelForSeq2SeqLM, DataCollatorForSeq2Seq,
+                          Seq2SeqTrainer, Seq2SeqTrainingArguments, pipeline)
 
 
 def load_pretrained_model(model_name: str, article: str, task: str = "summarization"):

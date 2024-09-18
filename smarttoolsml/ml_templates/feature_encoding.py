@@ -55,7 +55,6 @@ def label_encode_col(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
     return df
 
 
-
 def cat_cols_get_dummies(df: pd.DataFrame, cat_cols: list[str]):
     """_summary_
 
@@ -65,7 +64,7 @@ def cat_cols_get_dummies(df: pd.DataFrame, cat_cols: list[str]):
 
     Returns:
         _type_: _description_
-    
+
     Example usage:
         df = pd.read_csv("...")
         cat_cols = ["f1", "f2"]
@@ -76,4 +75,3 @@ def cat_cols_get_dummies(df: pd.DataFrame, cat_cols: list[str]):
         df = pd.concat([df, pd.get_dummies(df[col])], axis=1)
         df = df.drop(col, axis=1)
     return df
-

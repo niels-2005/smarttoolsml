@@ -1,4 +1,4 @@
-- für chatgpt individuell zu konfigurieren, um Texte für LLM's zusammenzufassen und Tokens zu sparen
+- für chatgpt individuell zu konfigurieren, um Texte für LLM's zusammenzufassen und Tokens zu sparen (solange es tokenprobleme gibt)
 
 
 # Sparse Priming Representations (SPR)
