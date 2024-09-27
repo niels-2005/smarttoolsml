@@ -13,7 +13,12 @@ def classification_evaluation_pipeline(
     y_true: np.ndarray,
     y_pred: np.ndarray,
     classes: list,
+    plot_classification_report: bool = True,
+    return_classification_report_df: bool = True,
+    plot_confusion_matrix: bool = True,
     get_wrong_preds: bool = False,
+    return_single_metrics: bool = True,
+    save_figures: bool = True
 ) -> None:
     """
     Evaluates the classification model by generating a comprehensive report including classification
@@ -39,24 +44,37 @@ def classification_evaluation_pipeline(
         # with getting Wrong Predictions
         df, wrong_preds = classification_evaluation_pipeline(X_test=X_test, y_true=y_test, y_pred=y_pred, classes=classes, get_wrong_preds=True)
     """
-    print("1. Printing Classification Report")
-    print(classification_report(y_pred=y_pred, y_true=y_true, target_names=classes))
-    print("2. Plotting Classification Report with Support")
-    report = classification_report(
-        y_pred=y_pred, y_true=y_true, output_dict=True, target_names=classes
-    )
-    plot_classification_report_with_support(report=report)
-    print("3. Plot Confusion Matrix")
-    make_confusion_matrix(y_true=y_true, y_pred=y_pred, classes=classes)
+    if plot_classification_report:
+        print("Printing Classification Report")
+        print(classification_report(y_pred=y_pred, y_true=y_true, target_names=classes))
+        print("Plotting Classification Report with Support")
+        report = classification_report(
+            y_pred=y_pred, y_true=y_true, output_dict=True, target_names=classes
+        )
+        plot_classification_report_with_support(report=report, save_figure=save_figures)
+        if return_classification_report_df:
+            report_df = pd.DataFrame(report)
+            return report_df
+
+
+    if plot_confusion_matrix:
+        print("Plot Confusion Matrix")
+        make_confusion_matrix(y_true=y_true, y_pred=y_pred, classes=classes, savefig=save_figures)
+
     if get_wrong_preds:
-        print("4. Getting wrong Predictions.")
-        df, wrong_preds = get_wrong_predictions(
+        print("Getting wrong Predictions.")
+        df_predictions, wrong_preds = get_wrong_predictions(
             X_test=X_test, y_pred=y_pred, y_true=y_true, classes=classes
         )
-        return df, wrong_preds
+        return df_predictions, wrong_preds
+
+    if return_single_metrics:
+        print("Calculating Accuracy, F1-Score, Precision and Recall")
+        df_metrics = calculate_metrics(y_pred=y_pred, y_true=y_true)
+        return df_metrics
 
 
-def plot_classification_report_with_support(report):
+def plot_classification_report_with_support(report: dict, save_figure: bool):
     labels = list(report.keys())[:-3]  # Exclude 'accuracy', 'macro avg', 'weighted avg'
     metrics = ["precision", "recall", "f1-score", "support"]
     data = np.array([[report[label][metric] for metric in metrics] for label in labels])
@@ -71,6 +89,8 @@ def plot_classification_report_with_support(report):
     plt.xlabel("Metrics")
     plt.ylabel("Classes")
     plt.title("Classification Report with Support")
+    if save_figure:
+        plt.savefig("classification_report.png")
     plt.show()
 
 
@@ -82,7 +102,7 @@ def make_confusion_matrix(
     text_size: int = 15,
     cmap: str = "Blues",
     norm: bool = False,
-    savefig: bool = False,
+    save_figure: bool = False,
 ) -> None:
     """
     Makes a labelled confusion matrix comparing predictions and ground truth labels, with options to normalize
@@ -155,13 +175,13 @@ def make_confusion_matrix(
 
     plt.tight_layout()
     # Save the figure if requested
-    if savefig:
+    if save_figure:
         plt.savefig("confusion_matrix.png")
     plt.show()
 
 
 def get_wrong_predictions(
-    X_test: pd.Series, y_true: np.ndarray, y_pred: np.ndarray, classes: list
+    X_test: pd.Series, y_true: np.ndarray, y_pred: np.ndarray, classes: list, is_binary: bool = True
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Identifies and returns the correct and incorrect predictions made by a classification model.
@@ -181,6 +201,11 @@ def get_wrong_predictions(
 
     The function also plots a count plot showing the balance between correct and incorrect predictions across predicted class labels.
     """
+
+    if is_binary:
+        y_pred = y_pred.reshape(-1)
+        y_true = y_true.reshape(-1)
+
     df_dict = {
         "text": X_test.values,
         "y_true": y_true,
@@ -199,3 +224,20 @@ def get_wrong_predictions(
 
     wrong_preds = df_pred[df_pred["pred_correct"] == False].reset_index(drop=True)
     return df_pred, wrong_preds
+
+
+def calculate_metrics(y_true: np.ndarray, y_pred: np.ndarray):
+        acc_score = accuracy_score(y_pred=y_pred, y_true=y_true, average='weighted')
+        f1 = f1_score(y_pred=y_pred, y_true=y_true, average="weighted")
+        precision = precision_score(y_pred=y_pred, y_true=y_true, average="weighted")
+        recall = recall_score(y_pred=y_pred, y_true=y_true, average="weighted")
+
+        df_dict = {
+            "accuracy": acc_score,
+            "f1-score": f1, 
+            "precision": precision,
+            "recall": recall
+        }
+
+        df_metrics = pd.DataFrame(df_dict)
+        return df_metrics
