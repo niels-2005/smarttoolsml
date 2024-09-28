@@ -1,18 +1,25 @@
-
-import numpy as np
-import pandas as pd 
-import matplotlib.pyplot as plt 
-import seaborn as sns
-from sklearn.metrics import roc_curve, auc, accuracy_score, f1_score, recall_score, precision_score
-
-
 import itertools
 
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from sklearn.metrics import (
+    accuracy_score,
+    auc,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_curve,
+)
 
-def plot_classification_report_with_support(y_pred: np.ndarray, y_true: np.ndarray, classes: list, save_figure: bool = False):
+
+def plot_classification_report_with_support(
+    y_pred: np.ndarray, y_true: np.ndarray, classes: list, save_figure: bool = False
+):
     report = classification_report(
-            y_pred=y_pred, y_true=y_true, output_dict=True, target_names=classes
-        )
+        y_pred=y_pred, y_true=y_true, output_dict=True, target_names=classes
+    )
     labels = list(report.keys())[:-3]  # Exclude 'accuracy', 'macro avg', 'weighted avg'
     metrics = ["precision", "recall", "f1-score", "support"]
     data = np.array([[report[label][metric] for metric in metrics] for label in labels])
@@ -164,7 +171,11 @@ def get_wrong_predictions_numeric(
 
 
 def get_wrong_predictions_text(
-    X_test: pd.Series, y_true: np.ndarray, y_pred: np.ndarray, classes: list, is_binary: bool = True
+    X_test: pd.Series,
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    classes: list,
+    is_binary: bool = True,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Identifies and returns the correct and incorrect predictions made by a classification model.
@@ -209,43 +220,47 @@ def get_wrong_predictions_text(
     return df_pred, wrong_preds
 
 
-def calculate_metrics(y_true: np.ndarray, y_pred: np.ndarray, average: str = "weighted"):
-        acc_score = accuracy_score(y_pred=y_pred, y_true=y_true, average=average)
-        f1 = f1_score(y_pred=y_pred, y_true=y_true, average=average)
-        precision = precision_score(y_pred=y_pred, y_true=y_true, average=average)
-        recall = recall_score(y_pred=y_pred, y_true=y_true, average=average)
+def calculate_metrics(
+    y_true: np.ndarray, y_pred: np.ndarray, average: str = "weighted"
+):
+    acc_score = accuracy_score(y_pred=y_pred, y_true=y_true, average=average)
+    f1 = f1_score(y_pred=y_pred, y_true=y_true, average=average)
+    precision = precision_score(y_pred=y_pred, y_true=y_true, average=average)
+    recall = recall_score(y_pred=y_pred, y_true=y_true, average=average)
 
-        df_dict = {
-            f"accuracy_{average}": acc_score,
-            f"f1-score_{average}": f1, 
-            f"precision_{average}": precision,
-            f"recall_{average}": recall
-        }
+    df_dict = {
+        f"accuracy_{average}": acc_score,
+        f"f1-score_{average}": f1,
+        f"precision_{average}": precision,
+        f"recall_{average}": recall,
+    }
 
-        df_metrics = pd.DataFrame(df_dict)
-        return df_metrics
+    df_metrics = pd.DataFrame(df_dict)
+    return df_metrics
 
 
-def plot_roc_auc_curve(y_true: np.ndarray, y_pred_proba: np.ndarray, save_figure: bool = True):
+def plot_roc_auc_curve(
+    y_true: np.ndarray, y_pred_proba: np.ndarray, save_figure: bool = True
+):
     """
     Example usage:
-        y_pred_proba = model.predict_proba(X_test)[:, 1] 
+        y_pred_proba = model.predict_proba(X_test)[:, 1]
         y_true = [...]
 
         plot_roc_auc_curve(y_true=y_true, y_pred_proba=y_pred_proba)
     """
     # Calculate ROC curve
-    fpr, tpr, thresholds = roc_curve(y_true, y_pred_proba) 
+    fpr, tpr, thresholds = roc_curve(y_true, y_pred_proba)
     roc_auc = auc(fpr, tpr)
     # Plot the ROC curve
-    plt.figure()  
-    plt.plot(fpr, tpr, label='ROC curve (area = %0.2f)' % roc_auc)
-    plt.plot([0, 1], [0, 1], 'k--', label='No Skill')
+    plt.figure()
+    plt.plot(fpr, tpr, label="ROC curve (area = %0.2f)" % roc_auc)
+    plt.plot([0, 1], [0, 1], "k--", label="No Skill")
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('ROC Curve')
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.title("ROC Curve")
     plt.legend()
     if save_figure:
         plt.savefig("roc_auc_curve.png")

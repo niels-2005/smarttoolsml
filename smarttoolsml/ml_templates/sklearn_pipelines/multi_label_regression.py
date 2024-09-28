@@ -3,8 +3,12 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import ElasticNet, Lasso, Ridge
-from sklearn.metrics import (make_scorer, mean_absolute_error,
-                             mean_squared_error, r2_score)
+from sklearn.metrics import (
+    make_scorer,
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score,
+)
 from sklearn.model_selection import cross_val_score
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.neighbors import KNeighborsRegressor

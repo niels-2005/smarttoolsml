@@ -1,23 +1,26 @@
 import itertools
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, f1_score, precision_score, recall_score
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+)
 
 
 def classification_evaluation_pipeline(
-    X_test: pd.Series,
     y_true: np.ndarray,
     y_pred: np.ndarray,
     classes: list,
-    plot_classification_report: bool = True,
-    return_classification_report_df: bool = True,
-    plot_confusion_matrix: bool = True,
-    get_wrong_preds: bool = False,
-    return_single_metrics: bool = True,
-    save_figures: bool = True
+    metrics_average: str = "weighted",
+    save_folder: str = "save_folder",
 ) -> None:
     """
     Evaluates the classification model by generating a comprehensive report including classification
@@ -38,54 +41,39 @@ def classification_evaluation_pipeline(
     Example usage:
         y_pred = model.predict(X_test)
         classes = ["Class 0", "Class 1"]
-        classification_evaluation_pipeline(X_test=X_test, y_true=y_test, y_pred=y_pred, classes=classes)
-
-        # with getting Wrong Predictions
-        df, wrong_preds = classification_evaluation_pipeline(X_test=X_test, y_true=y_test, y_pred=y_pred, classes=classes, get_wrong_preds=True)
+        save_folder = "model_1"
+        metrics_average = "weighted
+        classification_evaluation_pipeline(y_true=y_test, y_pred=y_pred, classes=classes, save_folder=save_folder, metrics_average=metrics_average)
     """
-    if plot_classification_report:
-        print("1. Printing Classification Report")
-        print(classification_report(y_pred=y_pred, y_true=y_true, target_names=classes))
-        print("2. Plotting Classification Report with Support")
-        report = classification_report(
-            y_pred=y_pred, y_true=y_true, output_dict=True, target_names=classes
-        )
-        plot_classification_report_with_support(report=report, save_figure=save_figures)
-        if return_classification_report_df:
-            report_df = pd.DataFrame(report)
-            return report_df
+    if not os.path.exists(save_folder):
+        os.makedirs(save_folder)
+
+    print("Printing Classification Report")
+    print(classification_report(y_pred=y_pred, y_true=y_true, target_names=classes))
+
+    print("Plotting Classification Report with Support")
+    report = classification_report(
+        y_pred=y_pred, y_true=y_true, output_dict=True, target_names=classes
+    )
+    plot_classification_report_with_support(report=report, save_folder=save_folder)
+    # save report as csv
+    report_df = pd.DataFrame(report)
+    report_df.to_csv(f"{save_folder}/classification_report.csv")
+
+    print("Plotting Confusion Matrix")
+    make_confusion_matrix(
+        y_true=y_true, y_pred=y_pred, classes=classes, save_folder=save_folder
+    )
+
+    # save model metrics as csv
+    print("Calculating Accuracy, F1-Score, Recall, Precision")
+    df_metrics = calculate_metrics(
+        y_pred=y_pred, y_true=y_true, average=metrics_average
+    )
+    df_metrics.to_csv(f"{save_folder}/model_metrics_{metrics_average}.csv")
 
 
-    if plot_confusion_matrix:
-        print("3. Plot Confusion Matrix")
-        make_confusion_matrix(y_true=y_true, y_pred=y_pred, classes=classes, savefig=save_figures)
-
-    if get_wrong_preds:
-        print("4. Getting wrong Predictions.")
-        df_predictions, wrong_preds = get_wrong_predictions(
-            X_test=X_test, y_pred=y_pred, y_true=y_true, classes=classes
-        )
-        return df_predictions, wrong_preds
-
-    if return_single_metrics:
-        print("5. Calculating Accuracy, F1-Score, Precision and Recall")
-        acc_score = accuracy_score(y_pred=y_pred, y_true=y_true, average='weighted')
-        f1 = f1_score(y_pred=y_pred, y_true=y_true, average="weighted")
-        precision = precision_score(y_pred=y_pred, y_true=y_true, average="weighted")
-        recall = recall_score(y_pred=y_pred, y_true=y_true, average="weighted")
-
-        df_dict = {
-            "accuracy": acc_score,
-            "f1-score": f1, 
-            "precision": precision,
-            "recall": recall
-        }
-
-        df_metrics = pd.DataFrame(df_dict)
-        return df_metrics
-
-
-def plot_classification_report_with_support(report: dict, save_figure: bool):
+def plot_classification_report_with_support(report: dict, save_folder: str):
     labels = list(report.keys())[:-3]  # Exclude 'accuracy', 'macro avg', 'weighted avg'
     metrics = ["precision", "recall", "f1-score", "support"]
     data = np.array([[report[label][metric] for metric in metrics] for label in labels])
@@ -100,20 +88,19 @@ def plot_classification_report_with_support(report: dict, save_figure: bool):
     plt.xlabel("Metrics")
     plt.ylabel("Classes")
     plt.title("Classification Report with Support")
-    if save_figure:
-        plt.savefig("classification_report.png")
+    plt.savefig(f"{save_folder}/classification_report.png")
     plt.show()
 
 
 def make_confusion_matrix(
     y_true: np.ndarray,
     y_pred: np.ndarray,
+    save_folder: str,
     classes: np.ndarray = None,
     figsize: tuple[int, int] = (10, 10),
     text_size: int = 15,
     cmap: str = "Blues",
     norm: bool = False,
-    save_figure: bool = False,
 ) -> None:
     """
     Makes a labelled confusion matrix comparing predictions and ground truth labels, with options to normalize
@@ -186,51 +173,24 @@ def make_confusion_matrix(
 
     plt.tight_layout()
     # Save the figure if requested
-    if save_figure:
-        plt.savefig("confusion_matrix.png")
+    plt.savefig(f"{save_folder}/confusion_matrix.png")
     plt.show()
 
 
-def get_wrong_predictions(
-    y_true: np.ndarray, y_pred: np.ndarray, classes: list, is_binary: bool = True
-) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """
-    Identifies and returns the correct and incorrect predictions made by a classification model.
-    The function creates a DataFrame that includes the test inputs, actual and predicted labels, and class names.
-    It also visualizes the distribution of correct and incorrect predictions.
-
-    Args:
-        X_test (pd.Series): The input text data that was used for testing the model, used here to trace back incorrect predictions to the original inputs.
-        y_true (np.ndarray): The actual labels from the test data, representing the true classes of the inputs.
-        y_pred (np.ndarray): The predicted labels produced by the classification model, used to compare against the true labels to determine prediction correctness.
-        classes (list): A list of class names corresponding to the label indices, used to convert label indices into human-readable class names for easier interpretation and visualization.
-
-    Returns:
-        tuple[pd.DataFrame, pd.DataFrame]: A tuple containing two DataFrames:
-            1. The first DataFrame includes all predictions with columns for the text, actual and predicted labels, and whether each prediction was correct.
-            2. The second DataFrame is a subset of the first and includes only the rows where the predictions were incorrect.
-
-    The function also plots a count plot showing the balance between correct and incorrect predictions across predicted class labels.
-    """
-
-    if is_binary:
-        y_true = y_true.reshape(-1)
-        y_pred = y_pred.reshape(-1)
+def calculate_metrics(
+    y_true: np.ndarray, y_pred: np.ndarray, average: str = "weighted"
+) -> pd.DataFrame:
+    acc_score = accuracy_score(y_pred=y_pred, y_true=y_true, average=average)
+    f1 = f1_score(y_pred=y_pred, y_true=y_true, average=average)
+    precision = precision_score(y_pred=y_pred, y_true=y_true, average=average)
+    recall = recall_score(y_pred=y_pred, y_true=y_true, average=average)
 
     df_dict = {
-        "y_true": y_true,
-        "y_pred": y_pred,
-        "y_true_classnames": [classes[i] for i in y_true],
-        "y_pred_classnames": [classes[i] for i in y_pred],
+        f"accuracy_{average}": acc_score,
+        f"f1-score_{average}": f1,
+        f"precision_{average}": precision,
+        f"recall_{average}": recall,
     }
 
-    df_pred = pd.DataFrame(df_dict).reset_index(drop=True)
-    df_pred["pred_correct"] = df_pred["y_true"] == df_pred["y_pred"]
-
-    plt.figure(figsize=(8, 4))
-    sns.countplot(x="pred_correct", hue="y_pred_classnames", data=df_pred)
-    plt.title("Balance between Predictions")
-    plt.show()
-
-    wrong_preds = df_pred[df_pred["pred_correct"] == False].reset_index(drop=True)
-    return df_pred, wrong_preds
+    df_metrics = pd.DataFrame(df_dict)
+    return df_metrics

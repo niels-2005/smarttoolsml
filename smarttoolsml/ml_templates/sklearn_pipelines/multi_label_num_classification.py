@@ -1,7 +1,10 @@
 import numpy as np
-from sklearn.ensemble import (BaggingClassifier, ExtraTreesClassifier,
-                              GradientBoostingClassifier,
-                              RandomForestClassifier)
+from sklearn.ensemble import (
+    BaggingClassifier,
+    ExtraTreesClassifier,
+    GradientBoostingClassifier,
+    RandomForestClassifier,
+)
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier

@@ -1,6 +1,5 @@
 import numpy as np
-from sklearn.model_selection import (GridSearchCV, RandomizedSearchCV,
-                                     train_test_split)
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, train_test_split
 
 
 def random_search_with_pipeline(
