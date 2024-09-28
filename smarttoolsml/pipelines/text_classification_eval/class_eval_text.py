@@ -22,6 +22,7 @@ def classification_evaluation_pipeline(
     classes: list,
     metrics_average: str = "weighted",
     save_folder: str = "save_folder",
+    is_binary_task: bool = True,
 ) -> None:
     """
     Evaluates the classification model by generating a comprehensive report including classification
@@ -42,10 +43,9 @@ def classification_evaluation_pipeline(
     Example usage:
         y_pred = model.predict(X_test)
         classes = ["Class 0", "Class 1"]
-        classification_evaluation_pipeline(X_test=X_test, y_true=y_test, y_pred=y_pred, y_prob=y_prob, classes=classes)
-
-        # with getting Wrong Predictions
-        df, wrong_preds = classification_evaluation_pipeline(X_test=X_test, y_true=y_test, y_pred=y_pred, classes=classes, get_wrong_preds=True)
+        metrics_average = "weighted"
+        save_folder = "model_1"
+        classification_evaluation_pipeline(X_test=X_test, y_true=y_test, y_pred=y_pred, classes=classes, metrics_average=metrics_average, save_folder=save_folder)
     """
     if not os.path.exists(save_folder):
         os.makedirs(save_folder)
@@ -67,7 +67,11 @@ def classification_evaluation_pipeline(
 
     print("Getting wrong Predictions.")
     df_predictions, wrong_preds = get_wrong_predictions(
-        X_test=X_test, y_pred=y_pred, y_true=y_true, classes=classes
+        X_test=X_test,
+        y_pred=y_pred,
+        y_true=y_true,
+        classes=classes,
+        is_binary=is_binary_task,
     )
     df_predictions.to_csv(f"{save_folder}/all_model_predictions.csv")
     wrong_preds.to_csv(f"{save_folder}/model_wrong_predictions.csv")
