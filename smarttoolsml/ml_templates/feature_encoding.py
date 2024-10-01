@@ -75,3 +75,24 @@ def cat_cols_get_dummies(df: pd.DataFrame, cat_cols: list[str]):
         df = pd.concat([df, pd.get_dummies(df[col])], axis=1)
         df = df.drop(col, axis=1)
     return df
+
+
+def simple_get_dummies(df: pd.DataFrame, cat_cols: list[str]):
+    """_summary_
+
+    Args:
+        df (pd.DataFrame): _description_
+        cat_cols (list[str]): _description_
+
+    Returns:
+        _type_: _description_
+
+    Example usage:
+        df = pd.read_csv("...")
+        cat_cols = ["f1", "f2"]
+
+        df = simple_get_dummies(df=df, cat_cols=cat_cols)
+    """
+    df = pd.get_dummies(df, columns=cat_cols)
+    df = df.drop(cat_cols, axis=1)
+    return df
