@@ -1,7 +1,7 @@
 from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
+import pandas as pd
 
-
-def scale_data(X_train, X_test, scaler):
+def scale_training_data(X_train, X_test, scaler):
     """_summary_
 
     Args:
@@ -19,7 +19,7 @@ def scale_data(X_train, X_test, scaler):
         scaler = MinMaxScaler()
         scaler = RobustScaler()
 
-        X_train, X_test = scale_data(X_train=X_train, X_test=X_test, scaler=scaler)
+        X_train, X_test = scale_training_data(X_train=X_train, X_test=X_test, scaler=scaler)
     """
     scaler.fit(X_train)
 
@@ -27,3 +27,18 @@ def scale_data(X_train, X_test, scaler):
     X_test = scaler.transform(X_test)
 
     return X_train, X_test
+
+
+def scale_columns(df, columns: list, scaler):
+    """
+    Example usage:
+        scaler = StandardScaler()
+        scaler = MinMaxScaler()
+        scaler = RobustScaler()
+
+        columns = ["Age", "Income"]
+
+        df = scale_columns(df, columns)
+    """
+    df[columns] = scaler.fit_transform(df[columns])
+    return df
