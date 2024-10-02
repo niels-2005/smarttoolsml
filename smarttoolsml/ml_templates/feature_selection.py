@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.feature_selection import RFECV, SelectKBest, chi2
-
+import pandas as pd
 
 def get_k_best_features(
-    k: int, X: np.ndarray, y: np.ndarray, transform_data: bool = False
+X: np.ndarray, y: np.ndarray, k: int = "all",  threshold: int = 100, transform_data: bool = False
 ):
     """_summary_
 
@@ -21,13 +21,25 @@ def get_k_best_features(
         get_k_best_features(k=5, X=X_norm, y=y_train)
 
     """
-    selected_features = SelectKBest(chi2, k=k).fit(X, y)
-    print("Score list:", selected_features.scores_)
-    print("Feature list:", X.columns)
+    # Wende SelectKBest an
+    selected_features = SelectKBest(chi2, k='all').fit(X, y)
+
+    # Erstelle einen DataFrame mit Scores und Feature-Namen
+    feature_scores = pd.DataFrame({
+        'Feature': X.columns,
+        'Chi-Squared Score': selected_features.scores_
+    }).sort_values(by='Chi-Squared Score', ascending=False)
+
+    print(feature_scores)
+
+    threshold = 100  
+    selected = feature_scores[feature_scores['Chi-Squared Score'] > threshold]
+    print("\nSelected Features based on threshold:")
+    print(selected)
 
     if transform_data:
-        X = selected_features.transform(X)
-        y = selected_features.transform(y)
+        selected_features_list = feature_scores[feature_scores['Chi-Squared Score'] > threshold]['Feature']
+        X = X[selected_features_list]
         return X, y
 
 

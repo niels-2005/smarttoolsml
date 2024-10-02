@@ -74,6 +74,12 @@ def label_encode_columns(df: pd.DataFrame, column_names: list[str]):
     return df
 
 
+def find_labelencoder_mapping(df: pd.DataFrame, column: str):
+    le = LabelEncoder().fit(df[column])
+    le_name_mapping = dict(zip(le.classes_, le.transform(le.classes_)))
+    print(le_name_mapping)
+
+
 def simple_get_dummies(df: pd.DataFrame, cat_cols: list[str], drop_first: bool = False):
     """_summary_
 
