@@ -55,29 +55,26 @@ def label_encode_col(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
     return df
 
 
-def cat_cols_get_dummies(df: pd.DataFrame, cat_cols: list[str]):
+def label_encode_columns(df: pd.DataFrame, column_names: list[str]):
     """_summary_
 
     Args:
         df (pd.DataFrame): _description_
-        cat_cols (list[str]): _description_
+        column_names (list[str]): _description_
 
     Returns:
         _type_: _description_
 
     Example usage:
         df = pd.read_csv("...")
-        cat_cols = ["f1", "f2"]
-
-        df = cat_cols_get_dummies(df=df, cat_cols=cat_cols)
+        features = ["f1", "f2"]
+        df = label_encode_columns(df=df, column_names=features)
     """
-    for col in cat_cols:
-        df = pd.concat([df, pd.get_dummies(df[col])], axis=1)
-        df = df.drop(col, axis=1)
+    df[column_names] = df[column_names].apply(LabelEncoder().fit_transform)
     return df
 
 
-def simple_get_dummies(df: pd.DataFrame, cat_cols: list[str]):
+def simple_get_dummies(df: pd.DataFrame, cat_cols: list[str], drop_first: bool = False):
     """_summary_
 
     Args:
@@ -93,6 +90,5 @@ def simple_get_dummies(df: pd.DataFrame, cat_cols: list[str]):
 
         df = simple_get_dummies(df=df, cat_cols=cat_cols)
     """
-    df = pd.get_dummies(df, columns=cat_cols)
-    df = df.drop(cat_cols, axis=1)
+    df = pd.get_dummies(df, columns=cat_cols, drop_first=drop_first)
     return df

@@ -223,16 +223,16 @@ def get_wrong_predictions_text(
 def calculate_metrics(
     y_true: np.ndarray, y_pred: np.ndarray, average: str = "weighted"
 ):
-    acc_score = accuracy_score(y_pred=y_pred, y_true=y_true, average=average)
+    acc_score = accuracy_score(y_pred=y_pred, y_true=y_true)
     f1 = f1_score(y_pred=y_pred, y_true=y_true, average=average)
     precision = precision_score(y_pred=y_pred, y_true=y_true, average=average)
     recall = recall_score(y_pred=y_pred, y_true=y_true, average=average)
 
     df_dict = {
-        f"accuracy_{average}": acc_score,
-        f"f1-score_{average}": f1,
-        f"precision_{average}": precision,
-        f"recall_{average}": recall,
+        f"accuracy_{average}": [acc_score],
+        f"f1-score_{average}": [f1],
+        f"precision_{average}": [precision],
+        f"recall_{average}": [recall],
     }
 
     df_metrics = pd.DataFrame(df_dict)

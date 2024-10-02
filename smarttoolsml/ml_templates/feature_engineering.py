@@ -45,4 +45,4 @@ def convert_labels(df: pd.DataFrame, labels_dict: dict):
 
 
 def simple_feature_creation_example(df):
-    df['Income per Age'] = df['Income'] / df['Age']
+    df["Income per Age"] = df["Income"] / df["Age"]

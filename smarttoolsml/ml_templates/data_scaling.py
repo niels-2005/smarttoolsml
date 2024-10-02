@@ -1,5 +1,6 @@
-from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
+
 
 def scale_training_data(X_train, X_test, scaler):
     """_summary_
