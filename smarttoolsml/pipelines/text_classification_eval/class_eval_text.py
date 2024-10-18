@@ -178,7 +178,7 @@ def make_confusion_matrix(
 
     plt.tight_layout()
     # Save the figure if requested
-    plt.savefig(f"{save_folder}/classification_report.png")
+    plt.savefig(f"{save_folder}/confusion_matrix.png")
     plt.show()
 
 
@@ -213,7 +213,7 @@ def get_wrong_predictions(
         y_true = y_true.reshape(-1)
 
     df_dict = {
-        "text": X_test.values,
+        "text": X_test,
         "y_true": y_true,
         "y_pred": y_pred,
         "y_true_classnames": [classes[i] for i in y_true],
@@ -235,17 +235,17 @@ def get_wrong_predictions(
 def calculate_metrics(
     y_true: np.ndarray, y_pred: np.ndarray, average: str = "weighted"
 ):
-    acc_score = accuracy_score(y_pred=y_pred, y_true=y_true, average=average)
+    acc_score = accuracy_score(y_pred=y_pred, y_true=y_true)
     f1 = f1_score(y_pred=y_pred, y_true=y_true, average=average)
     precision = precision_score(y_pred=y_pred, y_true=y_true, average=average)
     recall = recall_score(y_pred=y_pred, y_true=y_true, average=average)
 
     df_dict = {
-        f"accuracy_{average}": acc_score,
+        f"accuracy": acc_score,
         f"f1-score_{average}": f1,
         f"precision_{average}": precision,
         f"recall_{average}": recall,
     }
 
-    df_metrics = pd.DataFrame(df_dict)
+    df_metrics = pd.DataFrame([df_dict])
     return df_metrics
