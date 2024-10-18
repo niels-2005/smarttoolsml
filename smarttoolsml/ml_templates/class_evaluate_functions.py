@@ -235,13 +235,21 @@ def calculate_metrics(
     return df_metrics
 
 
-def calculate_complete_metrics(name: str, y_true: np.ndarray, y_pred: np.ndarray, target_names: list[str], average: str = "weighted"):
+def calculate_complete_metrics(
+    name: str,
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    target_names: list[str],
+    average: str = "weighted",
+):
     acc = accuracy_score(y_pred=y_pred, y_true=y_true)
     f1 = f1_score(y_pred=y_pred, y_true=y_true, average=average)
     precision = precision_score(y_pred=y_pred, y_true=y_true, average=average)
     recall = recall_score(y_pred=y_pred, y_true=y_true, average=average)
-    
-    report = classification_report(y_pred=y_pred, y_true=y_true, target_names=target_names, output_dict=True)   
+
+    report = classification_report(
+        y_pred=y_pred, y_true=y_true, target_names=target_names, output_dict=True
+    )
 
     dict = {
         "name": name,
@@ -255,7 +263,7 @@ def calculate_complete_metrics(name: str, y_true: np.ndarray, y_pred: np.ndarray
         dict[f"precision_{target}"] = report[target]["precision"]
         dict[f"recall{target}"] = report[target]["recall"]
         dict[f"f1-score_{target}"] = report[target]["f1-score"]
-        
+
     df_metrics = pd.DataFrame([dict])
     return df_metrics
 
