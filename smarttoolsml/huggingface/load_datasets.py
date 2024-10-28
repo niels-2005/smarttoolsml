@@ -43,3 +43,8 @@ def datasets_ready_for_tf():
         shuffle=True,
     )
     return tf_dataset
+
+
+def download_dataset_and_train_test_split():
+    squad = datasets.load("squad", split="train[:5000]")
+    squad = squad.train_test_split(test_size=0.2)
