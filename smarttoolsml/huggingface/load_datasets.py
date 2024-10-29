@@ -2,6 +2,7 @@ import datasets
 import pandas as pd
 from torch.utils.data import DataLoader
 from transformers import AutoFeatureExtractor, AutoModelForAudioClassification
+from datasets import Dataset, DatasetDict
 
 
 def download_dataset_shuffle_n_samples():
@@ -48,3 +49,13 @@ def datasets_ready_for_tf():
 def download_dataset_and_train_test_split():
     squad = datasets.load("squad", split="train[:5000]")
     squad = squad.train_test_split(test_size=0.2)
+
+
+def dataset_from_pandas(df_train_small, df_validation_small):
+    train_dataset = Dataset.from_pandas(df_train_small)
+    validation_dataset = Dataset.from_pandas(df_validation_small)
+
+    dataset = DatasetDict({
+        'train': train_dataset,
+        'validation': validation_dataset
+    })
