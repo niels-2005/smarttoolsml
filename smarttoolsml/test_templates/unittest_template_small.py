@@ -30,6 +30,7 @@ class Test(unittest.TestCase):
 
     def test_string_compression(self):
             start = time.perf_counter()
+            # 1000 runs
             for _ in range(1000):
                 for test_string, expected in self.test_cases:
                     assert compress_string(test_string) == expected
