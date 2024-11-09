@@ -27,18 +27,14 @@ class Test(unittest.TestCase):
         ("a", "a"),
         ("", ""),
     ]
-    testable_functions = [
-        compress_string,
-    ]
 
     def test_string_compression(self):
-        for function in self.testable_functions:
             start = time.perf_counter()
             for _ in range(1000):
                 for test_string, expected in self.test_cases:
-                    assert function(test_string) == expected
+                    assert compress_string(test_string) == expected
             duration = time.perf_counter() - start
-            print(f"{function.__name__} {duration * 1000:.1f}ms")
+            print(f"{compress_string.__name__} {duration * 1000:.1f}ms")
 
 
 if __name__ == "__main__":
