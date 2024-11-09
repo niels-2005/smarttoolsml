@@ -1,8 +1,8 @@
 import datasets
 import pandas as pd
+from datasets import Dataset, DatasetDict
 from torch.utils.data import DataLoader
 from transformers import AutoFeatureExtractor, AutoModelForAudioClassification
-from datasets import Dataset, DatasetDict
 
 
 def download_dataset_shuffle_n_samples():
@@ -55,7 +55,4 @@ def dataset_from_pandas(df_train_small, df_validation_small):
     train_dataset = Dataset.from_pandas(df_train_small)
     validation_dataset = Dataset.from_pandas(df_validation_small)
 
-    dataset = DatasetDict({
-        'train': train_dataset,
-        'validation': validation_dataset
-    })
+    dataset = DatasetDict({"train": train_dataset, "validation": validation_dataset})

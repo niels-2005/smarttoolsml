@@ -2,8 +2,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from callbacks import ModelMonitor
-from tensorflow.keras.layers import (Conv2D, Dense, Dropout, Flatten,
-                                     LeakyReLU, Reshape, UpSampling2D)
+from tensorflow.keras.layers import (
+    Conv2D,
+    Dense,
+    Dropout,
+    Flatten,
+    LeakyReLU,
+    Reshape,
+    UpSampling2D,
+)
 from tensorflow.keras.losses import BinaryCrossentropy
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.optimizers import Adam

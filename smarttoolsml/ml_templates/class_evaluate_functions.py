@@ -4,8 +4,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from sklearn.metrics import (accuracy_score, auc, f1_score, precision_score,
-                             recall_score, roc_curve)
+from sklearn.metrics import (
+    accuracy_score,
+    auc,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_curve,
+)
 
 
 def plot_classification_report_with_support(
