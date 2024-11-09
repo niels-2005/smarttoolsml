@@ -1,49 +1,44 @@
-def check_permutation_by_sort(s1: str, s2: str) -> bool:
-    if len(s1) != len(s2):
-        return False
-
-    s1, s2 = sorted(s1), sorted(s2)
-
-    for i in range(len(s1)):
-        if s1[i] != s2[i]:
-            return False
-    return True
-
-
-def check_permutation_by_count(s1: str, s2: str) -> bool:
-    if len(s1) != len(s2):
-        return False
-
-    # assuming ascii
-    counter = [0] * 128
-
-    for char in s1:
-        counter[ord(char)] += 1
-
-    for char in s2:
-        if counter[ord(char)] == 0:
-            return False
-        counter[ord(char)] -= 1
-    return True
-
-
 import unittest
+import time
+
+
+def compress_string(string: str) -> str:
+    compressed = []
+    counter = 0
+
+    for i in range(len(string)):
+        if string[i-1] != string[i]:
+            compressed.append(string[i-1] + str(counter))
+            counter = 0
+        counter += 1
+    
+    if counter: 
+        compressed.append(string[-1] + str(counter))
+    
+    return min(string, "".join(compressed), key=len)
 
 
 class Test(unittest.TestCase):
     test_cases = [
-        ("dog", "god", True),
-        ("dog ", "god ", True),
-        ("dog", "cat", False),
-        ("DOG", "god", False),
+        ("aabcccccaaa", "a2b1c5a3"),
+        ("abcdef", "abcdef"),
+        ("aabb", "aabb"),
+        ("aaa", "a3"),
+        ("a", "a"),
+        ("", ""),
+    ]
+    testable_functions = [
+        compress_string,
     ]
 
-    test_functions = [check_permutation_by_count, check_permutation_by_sort]
-
-    def test_permutation(self):
-        for check_permutation in self.test_functions:
-            for s1, s2, expected in self.test_cases:
-                assert check_permutation(s1, s2) == expected
+    def test_string_compression(self):
+        for f in self.testable_functions:
+            start = time.perf_counter()
+            for _ in range(1000):
+                for test_string, expected in self.test_cases:
+                    assert f(test_string) == expected
+            duration = time.perf_counter() - start
+            print(f"{f.__name__} {duration * 1000:.1f}ms")
 
 
 if __name__ == "__main__":
