@@ -1,15 +1,9 @@
 import math
 
 from datasets import load_dataset
-from transformers import (
-    AdamWeightDecay,
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    DataCollatorForLanguageModeling,
-    TFAutoModelForCausalLM,
-    Trainer,
-    TrainingArguments,
-)
+from transformers import (AdamWeightDecay, AutoModelForCausalLM, AutoTokenizer,
+                          DataCollatorForLanguageModeling,
+                          TFAutoModelForCausalLM, Trainer, TrainingArguments)
 
 
 def causal_language_modeling_pytorch():
