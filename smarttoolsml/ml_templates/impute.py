@@ -20,6 +20,8 @@ def simple_impute_df(df: pd.DataFrame, strategy: str = "mean"):
     """
     si = SimpleImputer(missing_values=np.nan, strategy=strategy)
     df_imp = pd.DataFrame(si.fit_transform(df), columns=df.columns)
+
+    # or df.fillna(df.mean())
     return df_imp
 
 

@@ -25,8 +25,8 @@ def feature_binning(df: pd.DataFrame, col: str, bins: list, labels: list):
     return df_dummies
 
 
-def convert_labels(df: pd.DataFrame, labels_dict: dict):
-    """_summary_
+def convert_labels(df: pd.DataFrame, labels_dict: dict, inverse_convert: bool = False):
+    """good to use when values are ordinal.
 
     Args:
         df (pd.DataFrame): _description_
@@ -40,9 +40,21 @@ def convert_labels(df: pd.DataFrame, labels_dict: dict):
         labels_dict = {0: "Ham", 1: "Spam"} # if column are numeric
         convert_labels(df=df, labels_dict=labels_dict)
     """
-    df["label"] = df["label"].map(labels_dict)
+    if inverse_convert:
+        inv_mapping = {v: k for k, v in labels_dict.items()}
+        df["label"].map(inv_mapping)
+    else:
+        df["label"] = df["label"].map(labels_dict)
+
     return df
 
 
 def simple_feature_creation_example(df):
     df["Income per Age"] = df["Income"] / df["Age"]
+
+
+def convert_ordinal_feature(df):
+    # df[size] = [M, L, XL] (...)
+    df["x > M"] = df["size"].apply(lambda x: 1 if x in {"L", "XL"} else 0)
+    df["x > L"] = df["size"].apply(lambda x: 1 if x == "XL" else 0)
+    return df

@@ -43,3 +43,7 @@ def scale_columns(df, columns: list, scaler):
     """
     df[columns] = scaler.fit_transform(df[columns])
     return df
+
+
+# standardize: (arr - arr.mean()) / arr.std()
+# normalize: (arr - arr.min()) / (arr.max() - arr.min())
