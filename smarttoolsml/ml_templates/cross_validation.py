@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import KFold, cross_val_score
+from sklearn.model_selection import KFold, StratifiedKFold, cross_val_score
 
 
 def cv_regression(X, y, model, cv):
@@ -37,7 +37,7 @@ def cv_regression(X, y, model, cv):
         print(model.score(X_test, y_test))
 
 
-def cross_val_score_regression(X, y, model, cv):
+def cross_val_score_api(X, y, model, cv):
     """_summary_
 
     Args:
@@ -54,5 +54,22 @@ def cross_val_score_regression(X, y, model, cv):
 
         cross_val_score_regression(X=X, y=y, model=model, cv=cv)
     """
-    scores = cross_val_score(model, X, y, cv=cv, n_jobs=-1)
+    scores = cross_val_score(model, X, y, cv=cv, n_jobs=-1, scoring="accuracy")
     print(np.mean(scores))
+
+
+def stratified_k_fold(X_train, y_train, clf):
+    kfold = StratifiedKFold(n_splits=10).split(X_train, y_train)
+
+    scores = []
+
+    for k, (train, test) in enumerate(kfold):
+        clf.fit(X_train[train], y_train[train])
+
+        score = clf.score(X_train[test], y_train[test])
+
+        scores.append(score)
+
+        print(f"Fold: {k+1}, Class dist.: {np.bincount(y_train[train])}, Acc: {score}")
+
+    print(f"KV-Classification: {np.mean(scores)} +/- {np.std(scores)}")
