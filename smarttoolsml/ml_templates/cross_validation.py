@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import KFold, StratifiedKFold, cross_val_score
+from sklearn.model_selection import (GridSearchCV, KFold, StratifiedKFold,
+                                     cross_val_score)
 
 
 def cv_regression(X, y, model, cv):
@@ -73,3 +74,10 @@ def stratified_k_fold(X_train, y_train, clf):
         print(f"Fold: {k+1}, Class dist.: {np.bincount(y_train[train])}, Acc: {score}")
 
     print(f"KV-Classification: {np.mean(scores)} +/- {np.std(scores)}")
+
+
+def cross_validation_5x2(clf, X_train, y_train, param_grid):
+    gs = GridSearchCV(estimator=clf, param_grid=param_grid, scoring="accuracy", cv=2)
+
+    scores = cross_val_score(gs, X_train, y_train, scoring="accuracy", cv=5)
+    print("CV accuracy: %.3f +/- %.3f" % (np.mean(scores), np.std(scores)))
