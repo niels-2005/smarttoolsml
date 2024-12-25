@@ -58,7 +58,7 @@ def plot_validation_curve(X, y):
     plt.show()
 
 
-def plot_learning_curve(X, y):
+def plot_learning_curve(X, y, clf):
     """_summary_
 
     Args:
@@ -71,34 +71,53 @@ def plot_learning_curve(X, y):
     """
     # calculate learning curve
     train_sizes_abs, train_scores, test_scores = learning_curve(
-        KNeighborsClassifier(n_neighbors=5), X, y, cv=5, scoring="accuracy", n_jobs=-1
+        clf, X, y, cv=10, scoring="accuracy", n_jobs=-1
     )
-
-    # calculate mean
     train_mean = np.mean(train_scores, axis=1)
+    train_std = np.std(train_scores, axis=1)
     test_mean = np.mean(test_scores, axis=1)
+    test_std = np.std(test_scores, axis=1)
 
-    # Plot Learning Curve
-    plt.figure(figsize=(10, 6))
     plt.plot(
         train_sizes_abs,
         train_mean,
         color="blue",
         marker="o",
         markersize=5,
-        label="Training Accuracy",
+        label="Training accuracy",
     )
+
+    plt.fill_between(
+        train_sizes_abs,
+        train_mean + train_std,
+        train_mean - train_std,
+        alpha=0.15,
+        color="blue",
+    )
+
     plt.plot(
         train_sizes_abs,
         test_mean,
-        color="orange",
+        color="green",
+        linestyle="--",
         marker="s",
         markersize=5,
-        label="Validation Accuracy",
+        label="Validation accuracy",
     )
-    plt.xlabel("Count Train Samples")
+
+    plt.fill_between(
+        train_sizes_abs,
+        test_mean + test_std,
+        test_mean - test_std,
+        alpha=0.15,
+        color="green",
+    )
+
+    plt.grid()
+    plt.xlabel("Number of training examples")
     plt.ylabel("Accuracy")
-    plt.title("Learning Curve")
-    plt.legend(loc="best")
-    plt.grid(True)
+    plt.legend(loc="lower right")
+    plt.ylim([0.8, 1.03])
+    plt.tight_layout()
+    # plt.savefig('images/06_05.png', dpi=300)
     plt.show()
