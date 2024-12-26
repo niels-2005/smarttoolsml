@@ -70,5 +70,6 @@ def simple_get_dummies(df: pd.DataFrame, cat_cols: list[str], drop_first: bool =
 
         df = simple_get_dummies(df=df, cat_cols=cat_cols)
     """
-    df = pd.get_dummies(df[cat_cols], drop_first=drop_first)
-    return df
+    df_ohe = pd.get_dummies(df[cat_cols], drop_first=drop_first)
+    df_final = pd.concat([df.drop(columns=cat_cols), df_ohe], axis=1)
+    return df_final

@@ -64,3 +64,8 @@ def fill_na_columns(
                     df_train[column] = df_train[column].fillna(mean_value)
                     df_test[column] = df_test[column].fillna(mean_value)
     return df_train, df_test
+
+
+def get_nan_rows(df):
+    df_nan = df[df.isnull().any(axis=1)]
+    return df_nan
