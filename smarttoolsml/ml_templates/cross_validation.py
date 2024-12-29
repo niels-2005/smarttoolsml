@@ -59,6 +59,45 @@ def cross_val_score_api(X, y, model, cv):
     print(np.mean(scores))
 
 
+def compare_algorithms_cv(
+    clfs, clfs_labels, X_train, y_train, cv=10, scoring="accuracy"
+):
+    """_summary_
+
+    Args:
+        clfs (_type_): _description_
+        clfs_labels (_type_): _description_
+        X_train (_type_): _description_
+        y_train (_type_): _description_
+        cv (int, optional): _description_. Defaults to 10.
+        scoring (str, optional): _description_. Defaults to "accuracy".
+
+    Example usage:
+        clf1 = LogisticRegression(penalty="l2", C=0.001, solver="lbfgs", random_state=1)
+
+        clf2 = DecisionTreeClassifier(max_depth=1, criterion="entropy", random_state=0)
+
+        clf3 = KNeighborsClassifier(n_neighbors=1, p=2, metric="minkowski")
+
+        pipe1 = Pipeline([["sc", StandardScaler()], ["clf", clf1]])
+        pipe3 = Pipeline([["sc", StandardScaler()], ["clf", clf3]])
+
+        clfs = [pipe1, clf2, pipe3]
+        clf_labels = ["Logistic regression", "Decision tree", "KNN"]
+
+        compare_algorithms_cv(clfs, clf_labels, X_train, y_train, cv=10, scoring="accuracy")
+    """
+    print(f"{cv}-fold cross validation:\n")
+
+    for clf, label in zip(clfs, clfs_labels):
+        scores = cross_val_score(
+            estimator=clf, X=X_train, y=y_train, cv=cv, scoring=scoring
+        )
+        print(
+            f"{scoring}: %0.2f (+/- %0.2f) [%s]" % (scores.mean(), scores.std(), label)
+        )
+
+
 def stratified_k_fold(X_train, y_train, clf):
     kfold = StratifiedKFold(n_splits=10).split(X_train, y_train)
 
