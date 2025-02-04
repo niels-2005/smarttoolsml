@@ -1,7 +1,10 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib import cm
 from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_samples
 
 
 def get_best_cluster(
@@ -67,3 +70,47 @@ def kmeans_with_pairplot(
     sns.pairplot(data, hue="pred", height=height, aspect=aspect, vars=data_cols)
     plt.show()
     return data
+
+
+def plot_silhouette(X, y_pred):
+    """_summary_
+
+    Args:
+        X (_type_): _description_
+        y_pred (_type_): _description_
+
+    Example usage:
+        # Silhouttenkoeffizient nicht annährend 0, hinweis gelungenes clustering
+        # außerdem wenn unterschiedliche Länge und Breite, hinweis nicht gelungenes clustering
+    """
+    cluster_labels = np.unique(y_pred)
+    n_clusters = cluster_labels.shape[0]
+    silhouette_vals = silhouette_samples(X, y_pred, metric="euclidean")
+    y_ax_lower, y_ax_upper = 0, 0
+    yticks = []
+    for i, c in enumerate(cluster_labels):
+        c_silhouette_vals = silhouette_vals[y_pred == c]
+        c_silhouette_vals.sort()
+        y_ax_upper += len(c_silhouette_vals)
+        color = cm.jet(float(i) / n_clusters)
+        plt.barh(
+            range(y_ax_lower, y_ax_upper),
+            c_silhouette_vals,
+            height=1.0,
+            edgecolor="none",
+            color=color,
+        )
+
+        yticks.append((y_ax_lower + y_ax_upper) / 2.0)
+        y_ax_lower += len(c_silhouette_vals)
+
+    silhouette_avg = np.mean(silhouette_vals)
+    plt.axvline(silhouette_avg, color="red", linestyle="--")
+
+    plt.yticks(yticks, cluster_labels + 1)
+    plt.ylabel("Cluster")
+    plt.xlabel("Silhouette coefficient")
+
+    plt.tight_layout()
+    # plt.savefig('images/11_04.png', dpi=300)
+    plt.show()
