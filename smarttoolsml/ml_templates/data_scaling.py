@@ -47,3 +47,19 @@ def scale_columns(df, columns: list, scaler):
 
 # standardize: (arr - arr.mean()) / arr.std()
 # normalize: (arr - arr.min()) / (arr.max() - arr.min())
+
+
+def scale_mone_tone(X):
+    """_summary_
+
+    Args:
+        X (_type_): _description_
+
+    Example usage:
+        X = [...]
+        X = scale_mone_tone(X)
+
+        scale X to [-1, 1]
+    """
+    X = ((X / 255.0) - 0.5) * 2
+    return X
