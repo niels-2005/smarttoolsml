@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import ListedColormap
 
+# from mlxtend.plotting import plot_decision_regions
+# better code
+
 
 def plot_decision_regions(X, y, classifier, resolution=0.02):
 
