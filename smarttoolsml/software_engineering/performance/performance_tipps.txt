@@ -1,0 +1,12 @@
+Avoid Premature Optimization:
+Do not optimize your code before you know the time or memory requirements for that code, or before you know where the bottlenecks are 
+
+
+Methods to Improve Performance:
+
+1. Your Choice of Algorithm
+2. Your choice of data structure
+3. Using built-in functions 
+4. Compiling Python 
+5. Asynchronous Code 
+6. Parallel and distributed computing
