@@ -16,9 +16,11 @@ sys.path.append(str(PACKAGE_ROOT))
 
 # # Then perform import
 from prediction_model.config import config
-from prediction_model.processing.data_handling import (load_dataset,
-                                                       load_pipeline,
-                                                       separate_data)
+from prediction_model.processing.data_handling import (
+    load_dataset,
+    load_pipeline,
+    separate_data,
+)
 
 classification_pipeline = load_pipeline(config.MODEL_NAME)
 

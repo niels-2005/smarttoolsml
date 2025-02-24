@@ -3,9 +3,15 @@ import math
 import tensorflow as tf
 import torch
 from datasets import load_dataset
-from transformers import (AdamWeightDecay, AutoModelForMaskedLM, AutoTokenizer,
-                          DataCollatorForLanguageModeling,
-                          TFAutoModelForMaskedLM, Trainer, TrainingArguments)
+from transformers import (
+    AdamWeightDecay,
+    AutoModelForMaskedLM,
+    AutoTokenizer,
+    DataCollatorForLanguageModeling,
+    TFAutoModelForMaskedLM,
+    Trainer,
+    TrainingArguments,
+)
 
 
 def masked_language_modeling_pytorch():

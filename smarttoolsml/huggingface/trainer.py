@@ -1,8 +1,12 @@
 from datasets import load_dataset
-from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
-                          DataCollatorWithPadding,
-                          TFAutoModelForSequenceClassification, Trainer,
-                          TrainingArguments)
+from transformers import (
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
+    DataCollatorWithPadding,
+    TFAutoModelForSequenceClassification,
+    Trainer,
+    TrainingArguments,
+)
 
 
 def pytorch_trainer():

@@ -1,5 +1,5 @@
-from scipy.stats import linregress
 import pandas as pd
+from scipy.stats import linregress
 
 
 def fit_trendline(year_timesteps, data):
@@ -8,9 +8,10 @@ def fit_trendline(year_timesteps, data):
         result = linregress(year_timesteps, data)
     except TypeError:
         # if "TypeError" occurs, handling the error and return default values (other functions might crash)
-        print(f"Both lists must contain only float or integers,
-              got {data.dtype} and {year_timesteps.dtype} instead.")
-        return 0.0, 0.0 
+        print(
+            f"Both lists must contain only float or integers, got {data.dtype} and {year_timesteps.dtype} instead."
+        )
+        return 0.0, 0.0
     else:
         # if no error occurs
         slope = round(result.slope, 3)
@@ -24,6 +25,6 @@ def fit_trendline(year_timesteps, data):
 def load_data(path):
     try:
         df = pd.read_csv(path)
-        return df 
+        return df
     except Exception as e:
         raise e

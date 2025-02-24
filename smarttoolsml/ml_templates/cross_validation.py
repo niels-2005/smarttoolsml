@@ -1,8 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import (GridSearchCV, KFold, StratifiedKFold,
-                                     cross_val_score)
+from sklearn.model_selection import (
+    GridSearchCV,
+    KFold,
+    StratifiedKFold,
+    cross_val_score,
+)
 
 
 def cv_regression(X, y, model, cv):

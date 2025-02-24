@@ -1,13 +1,22 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import (AdaBoostClassifier, ExtraTreesClassifier,
-                              GradientBoostingClassifier,
-                              RandomForestClassifier)
-from sklearn.feature_extraction.text import (CountVectorizer, TfidfTransformer,
-                                             TfidfVectorizer)
-from sklearn.linear_model import (PassiveAggressiveClassifier, Perceptron,
-                                  RidgeClassifier)
+from sklearn.ensemble import (
+    AdaBoostClassifier,
+    ExtraTreesClassifier,
+    GradientBoostingClassifier,
+    RandomForestClassifier,
+)
+from sklearn.feature_extraction.text import (
+    CountVectorizer,
+    TfidfTransformer,
+    TfidfVectorizer,
+)
+from sklearn.linear_model import (
+    PassiveAggressiveClassifier,
+    Perceptron,
+    RidgeClassifier,
+)
 from sklearn.model_selection import cross_val_score
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB
 from sklearn.neighbors import KNeighborsClassifier
