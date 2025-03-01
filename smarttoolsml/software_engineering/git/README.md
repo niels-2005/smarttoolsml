@@ -1,15 +1,24 @@
-Branches:
+# Git Branching Guide
 
-Create new branch
-1. git checkout -b new_branch 
+## Branches
 
-Push Code to new branch
-2. git push origin new_branch 
+### Create a new branch
+```sh
+git checkout -b new_branch
+```
 
-Change to main branch and merge both.
-3. git checkout main 
-4. git merge new_branch
+### Push code to new branch
+```sh
+git push origin new_branch
+```
 
-Delete branch
-5. git branch -d new_branch
+### Change to main branch and merge both
+```sh
+git checkout main
+git merge new_branch
+```
 
+### Delete branch
+```sh
+git branch -d new_branch
+```
