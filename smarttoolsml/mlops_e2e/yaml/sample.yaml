@@ -1,0 +1,10 @@
+preprocess:
+  input: "/home/ubuntu/dev/e2e_mlops/11_MLPipeline/sample_ml_pipeline/data/raw/data.csv"
+  output: "/home/ubuntu/dev/e2e_mlops/11_MLPipeline/sample_ml_pipeline/data/processed/data.csv"
+
+train:
+  data: "/home/ubuntu/dev/e2e_mlops/11_MLPipeline/sample_ml_pipeline/data/raw/data.csv"
+  model: /home/ubuntu/dev/e2e_mlops/11_MLPipeline/sample_ml_pipeline/models/model.pkl
+  random_state: 42 
+  n_estimators: 100 
+  max_depth: 5
