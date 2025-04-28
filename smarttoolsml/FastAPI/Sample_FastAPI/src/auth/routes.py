@@ -4,13 +4,12 @@ from fastapi import APIRouter, Depends, status
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from sqlmodel.ext.asyncio.session import AsyncSession
-
 from src.db.main import get_session
 from src.db.redis import add_jti_to_blocklist
 
 from .dependencies import (AccessTokenBearer, RefreshTokenBearer, RoleChecker,
                            get_current_user)
-from .schemas import UserCreateModel, UserLoginModel, UserModel, UserBooksModel
+from .schemas import UserBooksModel, UserCreateModel, UserLoginModel, UserModel
 from .service import UserService
 from .utils import create_access_token, verify_password
 

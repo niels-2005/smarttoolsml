@@ -1,7 +1,6 @@
 # Datei um Access, Refresh Tokens blocken zu können!
 
 import aioredis
-
 from src.config import Config
 
 JTI_EXPIRY = 3600

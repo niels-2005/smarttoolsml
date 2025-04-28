@@ -5,7 +5,8 @@ import evaluate
 import numpy as np
 import torch
 from datasets import Audio, load_dataset
-from transformers import AutoModelForCTC, AutoProcessor, Trainer, TrainingArguments
+from transformers import (AutoModelForCTC, AutoProcessor, Trainer,
+                          TrainingArguments)
 
 
 @dataclass

@@ -5,7 +5,6 @@ from fastapi.exceptions import HTTPException
 from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
 from sqlmodel.ext.asyncio.session import AsyncSession
-
 from src.auth.models import User
 from src.auth.service import UserService
 from src.db.main import get_session

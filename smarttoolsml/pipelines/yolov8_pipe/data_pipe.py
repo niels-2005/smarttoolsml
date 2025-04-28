@@ -1,6 +1,7 @@
 import os
 
-from base_functions import load_model, plot_random_samples, predict_random_samples
+from base_functions import (load_model, plot_random_samples,
+                            predict_random_samples)
 from cfg import CFG
 from PIL import Image
 

@@ -1,7 +1,9 @@
-from ensure import ensure_annotations 
+from ensure import ensure_annotations
 
-@ensure_annotations 
+
+@ensure_annotations
 def get_product(x: int, y: int) -> int:
-    return x * y 
+    return x * y
+
 
 # wirft error wenn Annotations nicht gematcht sind

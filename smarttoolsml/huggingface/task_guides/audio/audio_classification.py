@@ -2,12 +2,9 @@ import evaluate
 import numpy as np
 import torch
 from datasets import Audio, load_dataset
-from transformers import (
-    AutoFeatureExtractor,
-    AutoModelForAudioClassification,
-    Trainer,
-    TrainingArguments,
-)
+from transformers import (AutoFeatureExtractor,
+                          AutoModelForAudioClassification, Trainer,
+                          TrainingArguments)
 
 
 def audio_classification_pytorch():

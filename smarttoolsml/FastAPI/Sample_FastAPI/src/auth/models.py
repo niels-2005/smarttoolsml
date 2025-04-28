@@ -1,10 +1,11 @@
 import uuid
 from datetime import datetime
+from typing import List
 
 import sqlalchemy.dialects.postgresql as pg
-from sqlmodel import Column, Field, SQLModel, Relationship
-from typing import List 
+from sqlmodel import Column, Field, Relationship, SQLModel
 from src.books.schemas import Book
+
 
 class User(SQLModel, table=True):
     __tablename__ = "user_accounts"
@@ -32,7 +33,7 @@ class User(SQLModel, table=True):
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
 
-    books: List[Book] = Relationship( 
+    books: List[Book] = Relationship(
         back_populates="user", sa_relationship_kwargs={"lazy": "selectin"}
     )
 

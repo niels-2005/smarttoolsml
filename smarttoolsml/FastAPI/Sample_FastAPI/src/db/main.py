@@ -2,9 +2,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
-
-
-from src.auth.models import User 
+from src.auth.models import User
 from src.books.models import Book
 from src.config import Config
 

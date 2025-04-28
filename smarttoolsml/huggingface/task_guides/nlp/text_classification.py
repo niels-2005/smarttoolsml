@@ -3,15 +3,10 @@ import numpy as np
 import tensorflow as tf
 import torch
 from datasets import load_dataset
-from transformers import (
-    AutoModelForSequenceClassification,
-    AutoTokenizer,
-    DataCollatorWithPadding,
-    TFAutoModelForSequenceClassification,
-    Trainer,
-    TrainingArguments,
-    create_optimizer,
-)
+from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
+                          DataCollatorWithPadding,
+                          TFAutoModelForSequenceClassification, Trainer,
+                          TrainingArguments, create_optimizer)
 from transformers.keras_callbacks import KerasMetricCallback
 
 

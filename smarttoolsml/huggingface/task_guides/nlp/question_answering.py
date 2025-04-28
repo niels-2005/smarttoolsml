@@ -5,12 +5,8 @@ import numpy as np
 import torch
 from datasets import load_dataset
 from tqdm import tqdm
-from transformers import (
-    AutoModelForQuestionAnswering,
-    AutoTokenizer,
-    Trainer,
-    TrainingArguments,
-)
+from transformers import (AutoModelForQuestionAnswering, AutoTokenizer,
+                          Trainer, TrainingArguments)
 
 
 def question_answering_pytorch():

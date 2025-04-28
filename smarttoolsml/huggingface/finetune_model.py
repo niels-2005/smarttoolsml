@@ -2,13 +2,9 @@ import evaluate
 import numpy as np
 from datasets import load_dataset
 from tensorflow.keras.optimizers import Adam
-from transformers import (
-    AutoModelForSequenceClassification,
-    AutoTokenizer,
-    TFAutoModelForSequenceClassification,
-    Trainer,
-    TrainingArguments,
-)
+from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
+                          TFAutoModelForSequenceClassification, Trainer,
+                          TrainingArguments)
 
 
 def finetune_with_pytorch():
