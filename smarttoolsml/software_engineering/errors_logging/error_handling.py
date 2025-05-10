@@ -15,7 +15,7 @@ def fit_trendline(year_timesteps, data):
     else:
         # if no error occurs
         slope = round(result.slope, 3)
-        r_squared = round(result.rvalue**2, 3)
+        r_squared = round(result.rvalue ** 2, 3)
         return slope, r_squared
     finally:
         # after else statement delete for memory
