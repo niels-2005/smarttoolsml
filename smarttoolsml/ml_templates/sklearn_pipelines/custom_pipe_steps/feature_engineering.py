@@ -34,3 +34,21 @@ class SumFeaturesToOne(BaseEstimator, TransformerMixin):
     def transform(self, X):
         X[self.new_column] = X[self.variables_to_sum].sum(axis=1)
         return X
+
+
+# FEATURE BINNING
+class FeatureBinning(BaseEstimator, TransformerMixin):
+    def __init__(self, column_name, bins, labels):
+        self.column_name = column_name
+        self.bins = bins
+        self.labels = labels
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        X_copy = X.copy()
+        X_copy[self.column_name] = pd.cut(
+            X_copy[self.column_name], bins=self.bins, labels=self.labels
+        )
+        return X_copy
