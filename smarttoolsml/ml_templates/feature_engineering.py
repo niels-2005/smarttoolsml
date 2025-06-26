@@ -18,6 +18,11 @@ def feature_binning(df: pd.DataFrame, col: str, bins: list, labels: list):
         bins = [0, 6, 20, 55, 80]
         labels = ["very young", "young", "medium", "old"]
         df = feature_binning(df=df, col="Age", bins=bins, labels=labels)
+
+        easier way:
+        binning = pd.cut(df[column_name], bins=bins, labels=labels)
+        df[column_name] = binning
+        return df
     """
     binning = pd.cut(df[col], bins=bins, labels=labels)
     dummies = pd.get_dummies(binning).astype(int)
