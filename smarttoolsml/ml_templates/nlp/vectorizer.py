@@ -1,6 +1,8 @@
-from sklearn.feature_extraction.text import (CountVectorizer,
-                                             HashingVectorizer,
-                                             TfidfVectorizer)
+from sklearn.feature_extraction.text import (
+    CountVectorizer,
+    HashingVectorizer,
+    TfidfVectorizer,
+)
 
 
 def count_vectorizer(documents: list):

@@ -1,7 +1,10 @@
 import tensorflow as tf
 from torch import nn
-from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
-                          TFAutoModelForSequenceClassification)
+from transformers import (
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
+    TFAutoModelForSequenceClassification,
+)
 
 
 def get_pt_predictions():
