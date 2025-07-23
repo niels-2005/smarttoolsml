@@ -1,0 +1,60 @@
+version: '3'
+services:
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "./rules:/etc/prometheus/rules"
+      - "prometheus_data:/prometheus" # Persistent volume for Prometheus data
+    networks:
+      - localprom
+    ports:
+      - 9090:9090
+  node-exporter:
+    image: prom/node-exporter
+    networks:
+      - localprom
+    ports:
+      - 9100:9100
+  alert-manager:
+    image: prom/alertmanager
+    volumes:
+      - "./alertmanager.yaml:/alertmanager/alertmanager.yaml"
+    networks:
+      - localprom
+    ports:
+      - 9093:9093
+  pushgateway:
+    image: prom/pushgateway
+    networks:
+      - localprom
+    ports:
+      - 9091:9091
+  grafana:
+    image: grafana/grafana:latest # Verwende das neueste Grafana-Image
+    container_name: grafana
+    ports:
+      - "3000:3000" # Standardport für Grafana
+    volumes:
+      - "./grafana/data:/var/lib/grafana" # Persistente Daten für Dashboards und Konfigurationen
+      - "./grafana/provisioning:/etc/grafana/provisioning" # Automatische Provisionierung von Dashboards und Datasources
+      - "grafana_data:/var/lib/grafana" # Persistent volume for Grafana data
+    environment:
+      # Authentifizierung und Benutzerverwaltung
+      - GF_SECURITY_ADMIN_USER=admin # Standard-Admin-Benutzername
+      - GF_SECURITY_ADMIN_PASSWORD=admin # Standard-Admin-Passwort
+      - GF_AUTH_ANONYMOUS_ENABLED=false # Anonyme Anmeldung deaktivieren
+      - GF_USERS_ALLOW_SIGN_UP=false # Benutzerregistrierung deaktivieren
+    networks:
+      - localprom # Nutzt dasselbe Netzwerk wie Prometheus
+
+networks:
+  localprom:
+    driver: bridge
+
+# Persistent volumes for Prometheus and Grafana data
+volumes:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local

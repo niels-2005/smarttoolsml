@@ -1,0 +1,19 @@
+groups:
+  # cpu-metrics group with two rules
+  - name: cpu-metrics
+    rules:
+    - record: job:node_cpu_seconds_total:avg_rate5m
+      expr: avg without(cpu)(rate(node_cpu_seconds_total{mode="idle"}[5m]))
+
+    - record: job:node_memory_usage:avg_rate5m
+      expr: avg without(instance)(rate(node_memory_usage_bytes[5m]))
+
+  # Add a new group for memory metrics
+  - name: memory-metrics
+    rules:
+    - record: job:node_memory_usage:avg_rate5m
+      expr: avg without(instance)(rate(node_memory_usage_bytes[5m]))
+
+
+# It is Best Practice to keep rules organized in groups who belong together
+# A more better approach is to create separate files for each group of rules, such as cpu_rules.yaml, memory_rules.yaml, and network_rules.yaml.

@@ -1,0 +1,164 @@
+global:
+  smtp_from: 'example@gmail.com'
+  smtp_smarthost: smtp.gmail.com:587
+  smtp_auth_username: 'example@gmail.com'
+  smtp_auth_identity: 'example@gmail.com'
+  smtp_auth_password: 'fqkvkumorgaqgkat'
+
+route:
+  # fallback receiver
+  receiver: admin
+  group_wait: 40s # this means that the first notification after an alert is fired will be sent after 40 seconds, it can collect more alerts during this time
+  group_interval: 5m # this means pausing for 5 minutes before sending another notification for the same alert group
+  repeat_interval: 1h # this means that if the alert is still firing, it will be repeated every hour
+
+  routes:
+    # Star Solutions.
+  - match_re:
+      app_type: (linux|windows)
+    # fallback receiver 
+    receiver: ss-admin
+    routes:
+    # Linux team
+    - match:
+        app_type: linux
+      # fallback receiver
+      receiver: linux-team-admin
+      # group_by means that alerts will be grouped by the labels specified here.
+      group_by: ["category"]
+      routes:
+      - match:
+          severity: critical
+        receiver: linux-team-manager
+      - match:
+          severity: warning
+        receiver: linux-team-lead
+
+    # Windows team
+    - match:
+        app_type: windows
+      # fallback receiver
+      receiver: windows-team-admin
+      routes:
+      - match:
+          severity: critical
+        receiver: windows-team-manager 
+        continue: true # dont stop checking for other matches
+      - match:
+          severity: warning
+        receiver: windows-team-lead 
+      - match:
+          category: cpu 
+        receiver: linux-cpu-person
+
+    # PEC Technologies.
+  - match_re: 
+      app_type: (python|go)
+    # fallback receiver 
+    receiver: pec-admin
+    routes:
+    # Python team
+    - match:
+        app_type: python
+      # fallback receiver
+      receiver: python-team-admin
+      routes:
+      - match:
+          severity: critical
+        receiver: python-team-manager
+      - match:
+          severity: warning
+        receiver: python-team-lead
+
+    # Go team
+    - match:
+        app_type: go
+      # fallback receiver
+      receiver: go-team-admin
+      routes:
+      - match:
+          severity: critical
+        receiver: go-team-manager
+      - match:
+          severity: warning
+        receiver: go-team-lead
+
+# This means that if a critical alert is firing, it will inhibit the sending of warning alerts with the same labels.
+inhibit_rules:
+- source_match:
+    severity: critical
+  target_match:
+    severity: warning
+  equal: ['app_type', 'category']
+
+
+receivers:
+- name: admin
+  email_configs:
+  - to: 'example@gmail.com'
+
+- name: ss-admin
+  email_configs:
+  - to: 'example@gmail.com'
+
+- name: linux-team-admin
+  email_configs:
+  - to: 'example@gmail.com'
+
+# This is an example of a Slack receiver configuration. You need to configure the Slack webhook URL.
+- name: slack_example
+  slack_configs:
+  - api_url: 'https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXX'
+    channel: '#alerts'
+
+- name: linux-team-lead
+  email_configs:
+  - to: 'example@gmail.com'
+
+- name: linux-team-manager
+  email_configs:
+  - to: 'example@gmail.com'
+
+- name: linux-cpu-person
+  email_configs:
+  - to: 'example@gmail.com'
+
+- name: windows-team-admin
+  email_configs:
+  - to: 'example@gmail.com'
+
+- name: windows-team-lead
+  email_configs:
+  - to: 'example@gmail.com'
+
+- name: windows-team-manager
+  email_configs:
+  - to: 'example@gmail.com'
+
+- name: pec-admin
+  email_configs:
+  - to: 'example@gmail.com'
+
+- name: python-team-admin
+  email_configs:
+  - to: 'example@gmail.com'
+
+- name: python-team-lead
+  email_configs:
+  - to: 'example@gmail.com'
+
+- name: python-team-manager
+  email_configs:
+  - to: 'example@gmail.com'
+
+- name: go-team-admin
+  email_configs:
+  - to: 'example@gmail.com'
+
+- name: go-team-lead
+  email_configs:
+  - to: 'example@gmail.com'
+
+- name: go-team-manager
+  email_configs:
+  - to: 'example@gmail.com'

@@ -1,0 +1,44 @@
+groups: 
+  # Add a new group for CPU alerts
+  - name: cpu-alerts
+    rules:
+    - alert: HighCPUUsage
+      # The 'expr' defines the condition for the alert. In this case, it checks if the CPU usage is above 80%.
+      expr: sum(rate(node_cpu_seconds_total{mode!="idle"}[5m])) by (instance) > 0.8
+      # The 'for' specifies how long the condition must be true before the alert is triggered.
+      for: 5m
+      labels:
+        # 'severity' indicates the criticality of the alert. Common values are 'critical', 'warning', etc.
+        severity: critical
+      annotations:
+        # 'summary' provides a short description of the alert.
+        summary: "High CPU usage detected"
+        # 'description' gives a detailed explanation of the alert, often including dynamic values like instance or usage.
+        description: "CPU usage is above 80% for more than 5 minutes."
+
+
+  # Add a new group for application alerts
+  - name: app-alerts
+    rules:
+    # Add record rule for application response latency
+    - record: job:app_response_latency_seconds:rate5m
+      expr: rate(app_response_latency_seconds_sum[5m]) / rate(app_response_latency_seconds_count[5m])
+
+    - alert: AppLatencyAbove5Seconds
+      expr: job:app_response_latency_seconds:rate5m > 5 # you can use the recorded rule here without repeating the expression
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Application latency is above 5 seconds"
+        # see the dynamic labels in the description
+        description: "The average response time of the {{ $labels.instance }} of job {{ $labels.job }} is above 5 seconds for more than 5 minutes."
+
+    - alert: AppLatencyAbove2Seconds
+      expr: job:app_response_latency_seconds:rate5m > 2 and job:app_response_latency_seconds:rate5m < 5 # you can use the recorded rule here without repeating the expression
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Application latency is above 2 seconds and below 5 seconds"
+        description: "The average response time of the application is above 2 seconds and below 5 seconds for more than 2 minutes."
